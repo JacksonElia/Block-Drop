@@ -9,7 +9,13 @@ import SwiftUI
 
 struct ScoreView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack {
+            Text("Title Goes Here")
+            Spacer()
+            Text("Score Goes here")
+        }
+        .padding(20)
+        .background(.purple)
     }
 }
 

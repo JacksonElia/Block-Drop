@@ -9,7 +9,11 @@ import SwiftUI
 
 struct BlockGridView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Text("Game Grid Goes Here")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.blue)
     }
 }
 

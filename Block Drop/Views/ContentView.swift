@@ -9,8 +9,10 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack(spacing: 20) {
-            
+        VStack (spacing: 0) {
+            ScoreView()
+            BlockGridView()
+            BlockHoldView()
         }
     }
 }

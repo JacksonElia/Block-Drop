@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "download-tetris-block-11562908314mm4ctq6hpd.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

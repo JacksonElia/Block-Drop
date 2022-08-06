@@ -8,8 +8,27 @@
 import SwiftUI
 
 struct BlockHoldView: View {
+    
+    @ObservedObject var blockContainer = BlockContainer()
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack {
+            ForEach(0..<blockContainer.blocks.count, id: \.self) { i in
+                let block = blockContainer.blocks[i]
+                block.image
+                    .resizable()
+                    .frame(width: 96, height: 96, alignment: .center)
+                if i < blockContainer.blocks.count - 1 { // Spacers after everything but the last
+                    Spacer()
+                }
+            }
+        }
+        .padding(20)
+        .background(.green)
+        .onAppear {
+            blockContainer.refillBlocks()
+            print("refill")
+        }
     }
 }
 
