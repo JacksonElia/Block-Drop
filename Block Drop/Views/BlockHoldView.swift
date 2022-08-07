@@ -10,6 +10,9 @@ import SwiftUI
 struct BlockHoldView: View {
         
     @State var blocks = [Block]()
+    @StateObject var block1 = Block(shape: [], image: Image("block-example"))
+    @StateObject var block2 = Block(shape: [], image: Image("block-example"))
+    @StateObject var block3 = Block(shape: [], image: Image("block-example"))
     
     var body: some View {
         HStack {
@@ -24,11 +27,11 @@ struct BlockHoldView: View {
                         DragGesture()
                             .onChanged { gesture in
                                 block.offset = gesture.translation
-                                print(block.offset)
                             }
                         
                             .onEnded { _ in
                                 // Do stuff for dropping the block
+                                block.offset = .zero
                             }
                     )
                 if i < blocks.count - 1 { // Spacers after everything but the last
@@ -39,19 +42,11 @@ struct BlockHoldView: View {
         .padding(20)
         .background(.green)
         .onAppear {
-            refillBlocks()
+            blocks = [block1, block2, block3]
         }
     }
     
     let maxBlocks = 3
-    
-    /// Refills the blocks to max, starting at the front of the block array
-    func refillBlocks() {
-        for _ in blocks.count..<maxBlocks {
-            @ObservedObject var newBlock = Block(shape: [], image: Image("block-example"))
-            blocks.insert(newBlock, at: 0)
-        }
-    }
     
     /// A class representing each game piece used in the game
     class Block: ObservableObject {
