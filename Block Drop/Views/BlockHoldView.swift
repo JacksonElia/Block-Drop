@@ -24,9 +24,11 @@ struct BlockHoldView: View {
                     .offset(block.offset)
                     // Sets the offset to where the user drags the block
                     .gesture(
-                        DragGesture()
+                        DragGesture(minimumDistance: .zero, coordinateSpace: .named("blockHold"))
                             .onChanged { gesture in
                                 block.offset = gesture.translation
+                                block.position = gesture.location
+                                print(block.position)
                             }
                         
                             .onEnded { _ in
@@ -44,6 +46,7 @@ struct BlockHoldView: View {
         .onAppear {
             blocks = [block1, block2, block3]
         }
+        .coordinateSpace(name: "blockHold")
     }
     
     let maxBlocks = 3
@@ -56,8 +59,10 @@ struct BlockHoldView: View {
         var shape: [[Int]]
         /// The transparent image (png) that adheres to the shape of the block
         @Published var image: Image
-        /// The current x, y position on the screen relative to where the block starts
+        /// The current x, y position relative to where the block starts
         @Published var offset = CGSize.zero
+        /// The current x, y position relative to the screen
+        @Published var position = CGPoint.zero  // TODO: Make this where the block actually starts
         
         init(shape: [[Int]], image: Image) {
             self.shape = shape
