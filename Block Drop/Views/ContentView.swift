@@ -11,8 +11,7 @@ struct ContentView: View {
     var body: some View {
         VStack (spacing: 0) {
             ScoreView()
-            BlockGridView()
-            BlockHoldView()
+            GameView()
         }
     }
 }
