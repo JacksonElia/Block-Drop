@@ -19,7 +19,9 @@ class Block: ObservableObject {
     /// The current x, y position relative to where the block starts
     @Published var offset = CGSize.zero
     /// The current x, y position relative to the screen
-    @Published var position = CGPoint.zero  // TODO: Make this where the block actually starts
+    @Published var position = CGPoint.zero
+    /// true if the user is dragging the block
+    var isPickedUp = false
     
     init(shape: [[Int]], image: Image) {
         self.shape = shape

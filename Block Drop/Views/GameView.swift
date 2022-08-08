@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GameView: View {
     
-    @State var grid: [[Int]]
+    @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
     @StateObject var block1 = Block(shape: [], image: Image("block-example"))
     @StateObject var block2 = Block(shape: [], image: Image("block-example"))
@@ -18,12 +18,10 @@ struct GameView: View {
     let gridWidth = 9
     let gridHeight = 9
     let maxBlocks = 3
-    
-    private let gameCoordinateSpaceName = "gameCoordinateSpace"
-    
+        
     init() {
         // Creates the grid at the specified size
-        grid = [[Int]](repeating: [Int](repeating: 0, count: gridHeight), count: gridWidth)
+        gridTiles = [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight), count: gridWidth)
     }
     
     var body: some View {
@@ -31,7 +29,6 @@ struct GameView: View {
             drawGrid()
             makeBlockHolding()
         }
-        .coordinateSpace(name: gameCoordinateSpaceName)
         .onAppear {
             blocks = [block1, block2, block3]
         }
@@ -41,19 +38,21 @@ struct GameView: View {
     /// Draws the grid each time it needs to be updated
     @ViewBuilder func drawGrid() -> some View {
         VStack(spacing: 0) {
-            ForEach(0..<grid.count, id: \.self) { row in
+            ForEach(0..<gridTiles.count, id: \.self) { row in
                 HStack(spacing: 0) {
-                    ForEach(0..<grid[row].count, id: \.self) { col in
-                        let cell = grid[row][col]
-                        if cell == 0 {
-                            Image("redsquare")
-                                .resizable()
-                                .scaledToFit()
-                        } else {
-                            Image("greensquare")
-                                .resizable()
-                                .scaledToFit()
-                        }
+                    ForEach(0..<gridTiles[row].count, id: \.self) { col in
+                        var cell = gridTiles[row][col]
+                        getCellImage(cell: cell.tileNumber)
+                            .resizable()
+                            .scaledToFit()
+                            .overlay(GeometryReader { geometry in
+                                Color.clear
+                                    .onAppear {
+                                        cell.tileFrame = geometry.frame(in: .global)
+                                        gridTiles[row][col] = cell
+                                    }
+                            }
+                        )
                     }
                 }
             }
@@ -61,6 +60,19 @@ struct GameView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(10)
         .background(.blue)
+    }
+    
+    func getCellImage(cell: Int) -> Image {
+        switch cell {
+        case 0:
+            return Image("redsquare")
+        case 1:
+            return Image("greensquare")
+            
+        default:
+            // This should not be called
+            return Image("")
+        }
     }
     
     // MARK: The Block Hold View
@@ -72,21 +84,35 @@ struct GameView: View {
                 block.image
                     .resizable()
                     .frame(width: 96, height: 96, alignment: .center)
+                // Moves the block while it is being dragged
                     .offset(block.offset)
-                    // Sets the offset to where the user drags the block
+                // Sets the offset to where the user drags the block
                     .gesture(
-                        DragGesture(minimumDistance: .zero, coordinateSpace: .named(gameCoordinateSpaceName))
+                        DragGesture(minimumDistance: .zero, coordinateSpace: .global)
                             .onChanged { gesture in
-                                block.offset = gesture.translation
-                                block.position = gesture.location
+                                block.offset = CGSize(width: gesture.translation.width, height: gesture.translation.height - 70)
+                                block.position = CGPoint(x: gesture.location.x, y: gesture.location.y)
+                                block.isPickedUp = true
                                 print(block.position)
+                                for row in 0..<gridTiles.count {
+                                    for col in 0..<gridTiles[row].count {
+                                        var cell = gridTiles[row][col]
+                                        if cell.tileFrame.contains(block.position) {
+                                            cell.tileNumber = 1
+                                        } else {
+                                            cell.tileNumber = 0
+                                        }
+                                        gridTiles[row][col] = cell
+                                    }
+                                }
                             }
                             .onEnded { _ in
                                 // Do stuff for dropping the block
                                 block.offset = .zero
+                                block.isPickedUp = false
                             }
                     )
-                if i < blocks.count - 1 { // Spacers after everything but the last
+                if i < blocks.count - 1 { // Makes spacers after every block but the last
                     Spacer()
                 }
             }
