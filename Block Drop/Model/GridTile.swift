@@ -12,5 +12,6 @@ struct GridTile {
     
     var tileNumber: Int
     var tileFrame: CGRect
+    var isBeingHovered = false
     
 }
