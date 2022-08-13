@@ -22,6 +22,8 @@ class Block: ObservableObject {
     @Published var position = CGPoint.zero
     /// true if the user is dragging the block
     var isPickedUp = false
+    /// true if the block can be placed on the grid
+    var fitsOnGrid = false
     
     init(shape: [[Int]], image: Image) {
         self.shape = shape

@@ -21,7 +21,6 @@ struct GameView: View {
     
     init() {
         gridTiles = [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight), count: gridWidth)
-        print(gridTiles.count)
     }
 
     var body: some View {
@@ -93,9 +92,16 @@ struct GameView: View {
                 block.image
                     .resizable()
                     .frame(width: 96, height: 96, alignment: .center)
-                // Moves the block while it is being dragged
+                    .overlay {
+                        if block.fitsOnGrid || !block.isPickedUp {
+                            Color.clear
+                        } else {
+                            Color.red
+                        }
+                    }
+                    // Moves the block while it is being dragged
                     .offset(block.offset)
-                // Sets the offset to where the user drags the block
+                    // Sets the offset to where the user drags the block
                     .gesture(
                         DragGesture(minimumDistance: .zero, coordinateSpace: .global)
                             .onChanged { gesture in
@@ -103,12 +109,16 @@ struct GameView: View {
                                 block.position = CGPoint(x: gesture.location.x - 90, y: gesture.location.y - 50)
                                 block.isPickedUp = true
                                 resetGridHover()
-                                print(checkIfBlockFitsOnGrid(block))
+                                block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
                             }
                             .onEnded { _ in
                                 // Do stuff for dropping the block
                                 block.offset = .zero
                                 block.isPickedUp = false
+                                if block.fitsOnGrid {
+                                    dropBlockOnGrid(block)
+                                }
+                                resetGridHover()
                             }
                     )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
@@ -135,7 +145,6 @@ struct GameView: View {
             for gridCol in 0..<gridTiles[gridRow].count {
                 // Checks if the block is being dragged over the tile
                 if gridTiles[gridRow][gridCol].tileFrame.contains(block.position) {
-//                    gridTiles[gridRow][gridCol].tileNumber = 1
                     let blockShape = block.shape
                     // Loops through each tile on the block
                     for blockRow in 0..<blockShape.count {
@@ -166,6 +175,16 @@ struct GameView: View {
         }
         // Returns false because the block isn't even over the grid
         return false
+    }
+    
+    func dropBlockOnGrid(_ block: Block) {
+        for row in 0..<gridTiles.count {
+            for col in 0..<gridTiles[row].count {
+                if gridTiles[row][col].isBeingHovered {
+                    gridTiles[row][col].tileNumber = 1
+                }
+            }
+        }
     }
     
 }
