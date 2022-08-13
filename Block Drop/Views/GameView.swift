@@ -11,8 +11,8 @@ struct GameView: View {
     
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
-    @StateObject var block1 = Block(shape: [[1]], image: Image("block-example"))
-    @StateObject var block2 = Block(shape: [[1], [1], [1]], image: Image("block-example"))
+    @StateObject var block1 = Block(shape: [[1, 0, 0], [0, 0, 0], [0, 0, 0]], image: Image("block-example"))
+    @StateObject var block2 = Block(shape: [[1, 0, 0], [1, 0, 0], [1, 0, 0]], image: Image("block-example"))
     @StateObject var block3 = Block(shape: [], image: Image("block-example"))
     
     let gridWidth = 9
@@ -87,39 +87,51 @@ struct GameView: View {
     /// Makes the block holding area
     @ViewBuilder func makeBlockHolding() -> some View {
         HStack {
+            // Makes the block images
             ForEach(0..<blocks.count, id: \.self) { i in
                 let block = blocks[i]
-                block.image
-                    .resizable()
-                    .frame(width: 96, height: 96, alignment: .center)
-                    .overlay {
-                        if block.fitsOnGrid || !block.isPickedUp {
-                            Color.clear
-                        } else {
-                            Color.red
+                VStack(spacing: 0) {
+                    ForEach(0..<block.shape.count, id: \.self) { row in
+                        HStack(spacing: 0) {
+                            ForEach(0..<block.shape[row].count, id: \.self) { col in
+                                // Draws each of the blocks from their shape
+                                if block.shape[row][col] == 1{
+                                    Image("greensquare")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .opacity(1)
+                                } else {
+                                    Image("redsquare")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .opacity(0)
+                                }
+                            }
                         }
                     }
-                    // Moves the block while it is being dragged
-                    .offset(block.offset)
-                    // Sets the offset to where the user drags the block
-                    .gesture(
-                        DragGesture(minimumDistance: .zero, coordinateSpace: .global)
-                            .onChanged { gesture in
-                                block.offset = CGSize(width: gesture.translation.width - 70, height: gesture.translation.height - 70)
-                                block.position = CGPoint(x: gesture.location.x - 90, y: gesture.location.y - 50)
-                                block.isPickedUp = true
-                                resetGridHover()
-                                block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
+                }
+                .frame(width: 96, height: 96, alignment: .center)
+                // Moves the block while it is being dragged
+                .offset(block.offset)
+                // Handles the logic behind block dragging and dropping
+                .gesture(
+                    DragGesture(minimumDistance: .zero, coordinateSpace: .global)
+                        .onChanged { gesture in
+                            block.offset = CGSize(width: gesture.translation.width - 40, height: gesture.translation.height - 40)
+                            block.position = CGPoint(x: gesture.location.x - 60, y: gesture.location.y - 20)
+                            block.isPickedUp = true
+                            resetGridHover()
+                            block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
+                        }
+                        .onEnded { _ in
+                            // Do stuff for dropping the block
+                            block.offset = .zero
+                            block.isPickedUp = false
+                            if block.fitsOnGrid {
+                                dropBlockOnGrid(block)
                             }
-                            .onEnded { _ in
-                                // Do stuff for dropping the block
-                                block.offset = .zero
-                                block.isPickedUp = false
-                                if block.fitsOnGrid {
-                                    dropBlockOnGrid(block)
-                                }
-                                resetGridHover()
-                            }
+                            resetGridHover()
+                        }
                     )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
                     Spacer()
@@ -129,7 +141,7 @@ struct GameView: View {
         .padding(20)
         .background(.green)
     }
-    
+
     func resetGridHover() {
         for row in 0..<gridTiles.count {
             for col in 0..<gridTiles[row].count {
