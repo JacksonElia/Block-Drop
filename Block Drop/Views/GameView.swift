@@ -93,13 +93,16 @@ struct GameView: View {
         if gridTiles[row][col].isBeingHovered {
             overlayColor = .white
             for block in blocks {
-                // Makes the block red if it cannot be placed
+                // Makes the hover effect red if it cannot be placed
                 if !block.fitsOnGrid && block.isPickedUp {
                     overlayColor = .red
                 }
             }
-        } else {
-            overlayColor = .clear
+        } else if gridTiles[row][col].tileNumber == 0 {
+            // Makes the sub sections of the grid different colors
+            if Int(floor(Double(col / 3)) + 3 * floor(Double(row) / 3.0)) % 2 == 0 {
+                overlayColor = .green
+            }
         }
         return overlayColor
     }
