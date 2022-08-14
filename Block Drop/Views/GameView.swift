@@ -14,10 +14,11 @@ struct GameView: View {
     @State var blocks = [Block]()
     @StateObject var block1 = Block(shape: [[1, 0, 0], [0, 0, 0], [0, 0, 0]], image: Image("block-example"))
     @StateObject var block2 = Block(shape: [[1, 0, 0], [1, 0, 0], [1, 0, 0]], image: Image("block-example"))
-    @StateObject var block3 = Block(shape: [], image: Image("block-example"))
+    @StateObject var block3 = Block(shape: [[0, 0, 0], [1, 1, 1], [0, 0, 0]], image: Image("block-example"))
     
     let gridWidth = 9
     let gridHeight = 9
+    let gridSubsectionSize = 3
     let maxBlocks = 3
     
     init() {
@@ -100,7 +101,7 @@ struct GameView: View {
             }
         } else if gridTiles[row][col].tileNumber == 0 {
             // Makes the sub sections of the grid different colors
-            if Int(floor(Double(col / 3)) + 3 * floor(Double(row) / 3.0)) % 2 == 0 {
+            if Int(floor(Double(row / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double(col / gridSubsectionSize))) % 2 == 0 {
                 overlayColor = .green
             }
         }
@@ -153,6 +154,7 @@ struct GameView: View {
                             block.isPickedUp = false
                             if block.fitsOnGrid {
                                 dropBlockOnGrid(block)
+                                checkIfPlayerScored()
                             }
                             resetGridHover()
                         }
@@ -171,6 +173,12 @@ struct GameView: View {
             for col in 0..<gridTiles[row].count {
                 gridTiles[row][col].isBeingHovered = false
             }
+        }
+    }
+    
+    func clearGridTiles(tilesToClear: [(row: Int, col: Int)]) {
+        for tile in tilesToClear {
+            gridTiles[tile.row][tile.col].tileNumber = 0
         }
     }
     
@@ -221,6 +229,85 @@ struct GameView: View {
                 }
             }
         }
+    }
+    
+    func checkIfPlayerScored() {
+        /// The amount of points that will be added to the player's score
+        var pointsScored = 0
+        /// (row, col)  tuples that represent each of the grid tiles that should be cleared
+        var tilesToClear = [(Int, Int)]()
+        
+        // Checks grid subsections
+        for subsection in 0..<gridWidth * gridHeight / Int(pow(Double(gridSubsectionSize), 2)) {
+            var subsectionTiles = [(Int, Int)]()
+            // Starts assuming that the subsection is completely filled
+            var subsectionFilled = true
+            // Goes through tiles of subsection to check if they are filled
+            outerLoop: for row in Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize..<Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + gridSubsectionSize {
+                for col in (subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize..<(subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + gridSubsectionSize {
+                    subsectionTiles.append((row: row, col: col))
+                    // Checks if one of the tiles in the subsection is empty
+                    if gridTiles[row][col].tileNumber == 0 {
+                        subsectionFilled = false
+                        // Stops checking if the subsection is filled because one of the tiles was empty
+                        break outerLoop
+                    }
+                }
+            }
+            // Clears the tiles and gives the user points if the subsection is full
+            if subsectionFilled {
+                tilesToClear += subsectionTiles
+                pointsScored *= 2
+                pointsScored += 100
+            }
+        }
+        
+        // Checks grid rows
+        for row in 0..<gridHeight {
+            var rowTiles = [(Int, Int)]()
+            // Starts assuming the entire row is filled
+            var rowFilled = true
+            for col in 0..<gridWidth {
+                rowTiles.append((row: row, col: col))
+                // Checks if one of the tiles in the row is empty
+                if gridTiles[row][col].tileNumber == 0 {
+                    rowFilled = false
+                    // Stops checking if the row is filled because one of the tiles was empty
+                    break
+                }
+            }
+            // Clears the tiles and gives the user points if the row is full
+            if rowFilled {
+                tilesToClear += rowTiles
+                pointsScored *= 2
+                pointsScored += 100
+            }
+        }
+        
+        // Checks grid columns
+        for col in 0..<gridWidth {
+            var colTiles = [(Int, Int)]()
+            // Starts assuming the entire column is filled
+            var colFilled = true
+            for row in 0..<gridHeight {
+                colTiles.append((row: row, col: col))
+                // Checks if one of the tiles in the column is empty
+                if gridTiles[row][col].tileNumber == 0 {
+                    colFilled = false
+                    // Stops checking if the column is filled because one of the tiles was empty
+                    break
+                }
+            }
+            // Clears the tiles and gives the user points if the column is full
+            if colFilled {
+                tilesToClear += colTiles
+                pointsScored *= 2
+                pointsScored += 100
+            }
+        }
+        
+        score += pointsScored
+        clearGridTiles(tilesToClear: tilesToClear)
     }
     
 }
