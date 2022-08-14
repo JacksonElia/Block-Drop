@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GameView: View {
     
+    @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
     @StateObject var block1 = Block(shape: [[1, 0, 0], [0, 0, 0], [0, 0, 0]], image: Image("block-example"))
@@ -25,6 +26,7 @@ struct GameView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            drawScoreView()
             drawGrid()
             makeBlockHolding()
         }
@@ -32,6 +34,18 @@ struct GameView: View {
             // Creates the 3 game blocks
             blocks = [block1, block2, block3]
         }
+    }
+    
+    // MARK: The Score View
+    /// Draws the score view each time it needs to be updated
+    @ViewBuilder func drawScoreView() -> some View {
+        HStack {
+            Text("Title Goes Here")
+            Spacer()
+            Text("Score: \(score)")
+        }
+        .padding(20)
+        .background(.purple)
     }
     
     // MARK: The Grid View
@@ -46,6 +60,7 @@ struct GameView: View {
                             .scaledToFit()
                             .overlay(GeometryReader { geometry in
                                 getCellOverlayColor(row, col)
+                                    .opacity(0.6)
                                     .onAppear {
                                         // Sets the value of the actual cell, not the copy of it
                                         gridTiles[row][col].tileFrame = geometry.frame(in: .global)
@@ -77,6 +92,12 @@ struct GameView: View {
         var overlayColor = Color.clear
         if gridTiles[row][col].isBeingHovered {
             overlayColor = .white
+            for block in blocks {
+                // Makes the block red if it cannot be placed
+                if !block.fitsOnGrid && block.isPickedUp {
+                    overlayColor = .red
+                }
+            }
         } else {
             overlayColor = .clear
         }

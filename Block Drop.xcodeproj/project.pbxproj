@@ -10,23 +10,23 @@
 		501AD37B28A0317300D584D2 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD37A28A0317300D584D2 /* GameView.swift */; };
 		501AD37D28A0326E00D584D2 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD37C28A0326E00D584D2 /* Block.swift */; };
 		501AD38128A0BD4C00D584D2 /* GridTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD38028A0BD4C00D584D2 /* GridTile.swift */; };
+		507BB7DC28A8AC7400209515 /* GridLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507BB7DB28A8AC7400209515 /* GridLogic.swift */; };
 		50F824D3289E0DCD00818440 /* Block_DropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F824D2289E0DCD00818440 /* Block_DropApp.swift */; };
 		50F824D5289E0DCD00818440 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F824D4289E0DCD00818440 /* ContentView.swift */; };
 		50F824D7289E0DD000818440 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50F824D6289E0DD000818440 /* Assets.xcassets */; };
 		50F824DA289E0DD000818440 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50F824D9289E0DD000818440 /* Preview Assets.xcassets */; };
-		50F824E7289EFEAC00818440 /* ScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F824E6289EFEAC00818440 /* ScoreView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		501AD37A28A0317300D584D2 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		501AD37C28A0326E00D584D2 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		501AD38028A0BD4C00D584D2 /* GridTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridTile.swift; sourceTree = "<group>"; };
+		507BB7DB28A8AC7400209515 /* GridLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridLogic.swift; sourceTree = "<group>"; };
 		50F824CF289E0DCD00818440 /* Block Drop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Block Drop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		50F824D2289E0DCD00818440 /* Block_DropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block_DropApp.swift; sourceTree = "<group>"; };
 		50F824D4289E0DCD00818440 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		50F824D6289E0DD000818440 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		50F824D9289E0DD000818440 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		50F824E6289EFEAC00818440 /* ScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,7 +80,6 @@
 			isa = PBXGroup;
 			children = (
 				50F824D4289E0DCD00818440 /* ContentView.swift */,
-				50F824E6289EFEAC00818440 /* ScoreView.swift */,
 				501AD37A28A0317300D584D2 /* GameView.swift */,
 			);
 			path = Views;
@@ -91,6 +90,7 @@
 			children = (
 				501AD37C28A0326E00D584D2 /* Block.swift */,
 				501AD38028A0BD4C00D584D2 /* GridTile.swift */,
+				507BB7DB28A8AC7400209515 /* GridLogic.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -167,10 +167,10 @@
 			files = (
 				501AD37D28A0326E00D584D2 /* Block.swift in Sources */,
 				501AD38128A0BD4C00D584D2 /* GridTile.swift in Sources */,
+				507BB7DC28A8AC7400209515 /* GridLogic.swift in Sources */,
 				50F824D5289E0DCD00818440 /* ContentView.swift in Sources */,
 				50F824D3289E0DCD00818440 /* Block_DropApp.swift in Sources */,
 				501AD37B28A0317300D584D2 /* GameView.swift in Sources */,
-				50F824E7289EFEAC00818440 /* ScoreView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
