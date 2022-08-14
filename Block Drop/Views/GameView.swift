@@ -22,7 +22,7 @@ struct GameView: View {
     let maxBlocks = 3
     
     init() {
-        gridTiles = [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight), count: gridWidth)
+        gridTiles = [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight + 1), count: gridWidth + 1)
     }
 
     var body: some View {
@@ -34,6 +34,15 @@ struct GameView: View {
         .onAppear {
             // Creates the 3 game blocks
             blocks = [block1, block2, block3]
+            
+            // Creates the invisible tiles on the border of the grid
+            for row in 0..<gridTiles.count {
+                gridTiles[row][0].tileNumber = -1
+            }
+            
+            for col in 0..<gridTiles[0].count {
+                gridTiles[0][col].tileNumber = -1
+            }
         }
     }
     
@@ -69,11 +78,14 @@ struct GameView: View {
                             }
                         )
                     }
+                    // Adds in blank tiles that do nothing except add more space
+                    getCellImage(tileNumber: -1)
+                        .resizable()
+                        .scaledToFit()
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(10)
         .background(.blue)
     }
     
@@ -83,6 +95,9 @@ struct GameView: View {
             return Image("redsquare")
         case 1:
             return Image("greensquare")
+        case -1:
+            // Returns an image that doesn't exist so it is blank
+            return Image("nosquare")
         default:
             // This should not be called
             return Image("")
@@ -101,7 +116,7 @@ struct GameView: View {
             }
         } else if gridTiles[row][col].tileNumber == 0 {
             // Makes the sub sections of the grid different colors
-            if Int(floor(Double(row / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double(col / gridSubsectionSize))) % 2 == 0 {
+            if Int(floor(Double((row - 1) / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double((col - 1) / gridSubsectionSize))) % 2 == 0 {
                 overlayColor = .green
             }
         }
@@ -188,7 +203,7 @@ struct GameView: View {
         for gridRow in 0..<gridTiles.count {
             for gridCol in 0..<gridTiles[gridRow].count {
                 // Checks if the block is being dragged over the tile
-                if gridTiles[gridRow][gridCol].tileFrame.contains(block.position) {
+                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x + 48, y: block.position.y + 48)) {
                     let blockShape = block.shape
                     // Loops through each tile on the block
                     for blockRow in 0..<blockShape.count {
@@ -243,8 +258,8 @@ struct GameView: View {
             // Starts assuming that the subsection is completely filled
             var subsectionFilled = true
             // Goes through tiles of subsection to check if they are filled
-            outerLoop: for row in Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize..<Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + gridSubsectionSize {
-                for col in (subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize..<(subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + gridSubsectionSize {
+        outerLoop: for row in Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + 1...Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + gridSubsectionSize {
+            for col in (subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + 1...(subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + gridSubsectionSize {
                     subsectionTiles.append((row: row, col: col))
                     // Checks if one of the tiles in the subsection is empty
                     if gridTiles[row][col].tileNumber == 0 {
@@ -263,11 +278,11 @@ struct GameView: View {
         }
         
         // Checks grid rows
-        for row in 0..<gridHeight {
+        for row in 1...gridHeight {
             var rowTiles = [(Int, Int)]()
             // Starts assuming the entire row is filled
             var rowFilled = true
-            for col in 0..<gridWidth {
+            for col in 1...gridWidth {
                 rowTiles.append((row: row, col: col))
                 // Checks if one of the tiles in the row is empty
                 if gridTiles[row][col].tileNumber == 0 {
@@ -285,11 +300,11 @@ struct GameView: View {
         }
         
         // Checks grid columns
-        for col in 0..<gridWidth {
+        for col in 1...gridWidth {
             var colTiles = [(Int, Int)]()
             // Starts assuming the entire column is filled
             var colFilled = true
-            for row in 0..<gridHeight {
+            for row in 1...gridHeight {
                 colTiles.append((row: row, col: col))
                 // Checks if one of the tiles in the column is empty
                 if gridTiles[row][col].tileNumber == 0 {
