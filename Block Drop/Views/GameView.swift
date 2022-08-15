@@ -9,13 +9,13 @@ import SwiftUI
 
 struct GameView: View {
     
-    @State var secondsLeft = 10
+    @State var secondsLeft = 15
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
-    @StateObject var block1 = Block(shape: [[1, 0, 0], [0, 0, 0], [0, 0, 0]], image: Image("block-example"))
-    @StateObject var block2 = Block(shape: [[1, 0, 0], [1, 0, 0], [1, 0, 0]], image: Image("block-example"))
-    @StateObject var block3 = Block(shape: [[0, 0, 0], [1, 1, 1], [0, 0, 0]], image: Image("block-example"))
+    @StateObject var block1 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
+    @StateObject var block2 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
+    @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -58,7 +58,7 @@ struct GameView: View {
                     if secondsLeft > 0 {
                         secondsLeft -= 1
                     } else {
-                        secondsLeft = 10
+                        secondsLeft = 15
                     }
                 }
             Spacer()
@@ -88,7 +88,15 @@ struct GameView: View {
                             }
                         )
                     }
-                    // Adds in blank tiles that do nothing except add more space
+                    // Adds in last column of tiles that do nothing except add more space
+                    getCellImage(tileNumber: -1)
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+            // Adds in the bottom row of blank tiles that do nothing except add more space
+            HStack(spacing: 0) {
+                ForEach(0..<gridTiles[0].count, id: \.self) { col in
                     getCellImage(tileNumber: -1)
                         .resizable()
                         .scaledToFit()
@@ -149,12 +157,10 @@ struct GameView: View {
                                     Image("greensquare")
                                         .resizable()
                                         .scaledToFit()
-                                        .opacity(1)
                                 } else {
-                                    Image("redsquare")
+                                    Image("nosquare")
                                         .resizable()
                                         .scaledToFit()
-                                        .opacity(0)
                                 }
                             }
                         }
@@ -163,6 +169,11 @@ struct GameView: View {
                 .frame(width: 96, height: 96, alignment: .center)
                 // Moves the block while it is being dragged
                 .offset(block.offset)
+                // Rotates the block when tapped
+                .onTapGesture {
+                    print("tap")
+                    rotateBlock(block)
+                }
                 // Handles the logic behind block dragging and dropping
                 .gesture(
                     DragGesture(minimumDistance: .zero, coordinateSpace: .global)
@@ -180,9 +191,11 @@ struct GameView: View {
                             if block.fitsOnGrid {
                                 dropBlockOnGrid(block)
                                 checkIfPlayerScored()
+                                block.shape = blockShapes.randomElement()!
                             }
                             resetGridHover()
                         }
+                    
                     )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
                     Spacer()
@@ -244,6 +257,21 @@ struct GameView: View {
         }
         // Returns false because the block isn't even over the grid
         return false
+    }
+    
+    // Hard coded to only work for a 3x3 block
+    func rotateBlock(_ block: Block) {
+        let blockShape = block.shape
+        var rotatedBlockShape = block.shape
+        rotatedBlockShape[0][0] = blockShape[2][0]
+        rotatedBlockShape[0][1] = blockShape[1][0]
+        rotatedBlockShape[0][2] = blockShape[0][0]
+        rotatedBlockShape[1][2] = blockShape[0][1]
+        rotatedBlockShape[2][2] = blockShape[0][2]
+        rotatedBlockShape[2][1] = blockShape[1][2]
+        rotatedBlockShape[2][0] = blockShape[2][2]
+        rotatedBlockShape[1][0] = blockShape[2][1]
+        block.shape = rotatedBlockShape
     }
     
     func dropBlockOnGrid(_ block: Block) {
