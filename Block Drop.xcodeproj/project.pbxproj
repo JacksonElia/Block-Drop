@@ -11,6 +11,7 @@
 		501AD37D28A0326E00D584D2 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD37C28A0326E00D584D2 /* Block.swift */; };
 		501AD38128A0BD4C00D584D2 /* GridTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD38028A0BD4C00D584D2 /* GridTile.swift */; };
 		507BB7DC28A8AC7400209515 /* GridLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507BB7DB28A8AC7400209515 /* GridLogic.swift */; };
+		507BB7E028AA065C00209515 /* TitleScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507BB7DF28AA065C00209515 /* TitleScreenView.swift */; };
 		50F824D3289E0DCD00818440 /* Block_DropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F824D2289E0DCD00818440 /* Block_DropApp.swift */; };
 		50F824D5289E0DCD00818440 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F824D4289E0DCD00818440 /* ContentView.swift */; };
 		50F824D7289E0DD000818440 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50F824D6289E0DD000818440 /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 		501AD37C28A0326E00D584D2 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		501AD38028A0BD4C00D584D2 /* GridTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridTile.swift; sourceTree = "<group>"; };
 		507BB7DB28A8AC7400209515 /* GridLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridLogic.swift; sourceTree = "<group>"; };
+		507BB7DF28AA065C00209515 /* TitleScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleScreenView.swift; sourceTree = "<group>"; };
 		50F824CF289E0DCD00818440 /* Block Drop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Block Drop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		50F824D2289E0DCD00818440 /* Block_DropApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block_DropApp.swift; sourceTree = "<group>"; };
 		50F824D4289E0DCD00818440 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 			children = (
 				50F824D4289E0DCD00818440 /* ContentView.swift */,
 				501AD37A28A0317300D584D2 /* GameView.swift */,
+				507BB7DF28AA065C00209515 /* TitleScreenView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				507BB7E028AA065C00209515 /* TitleScreenView.swift in Sources */,
 				501AD37D28A0326E00D584D2 /* Block.swift in Sources */,
 				501AD38128A0BD4C00D584D2 /* GridTile.swift in Sources */,
 				507BB7DC28A8AC7400209515 /* GridLogic.swift in Sources */,

@@ -34,6 +34,7 @@ struct GameView: View {
             drawGrid()
             makeBlockHolding()
         }
+        .coordinateSpace(name: "gameViewCoordinateSpace")
         .onAppear {
             // Creates the 3 game blocks
             blocks = [block1, block2, block3]
@@ -83,7 +84,7 @@ struct GameView: View {
                                     .opacity(0.6)
                                     .onAppear {
                                         // Sets the value of the actual cell, not the copy of it
-                                        gridTiles[row][col].tileFrame = geometry.frame(in: .global)
+                                        gridTiles[row][col].tileFrame = geometry.frame(in: .named("gameViewCoordinateSpace"))
                                     }
                             }
                         )
@@ -176,10 +177,10 @@ struct GameView: View {
                 }
                 // Handles the logic behind block dragging and dropping
                 .gesture(
-                    DragGesture(minimumDistance: .zero, coordinateSpace: .global)
+                    DragGesture(minimumDistance: .zero, coordinateSpace: .named("gameViewCoordinateSpace"))
                         .onChanged { gesture in
                             block.offset = CGSize(width: gesture.translation.width - 40, height: gesture.translation.height - 40)
-                            block.position = CGPoint(x: gesture.location.x - 60, y: gesture.location.y - 20)
+                            block.position = CGPoint(x: gesture.location.x - 120, y: gesture.location.y + 15)
                             block.isPickedUp = true
                             resetGridHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
