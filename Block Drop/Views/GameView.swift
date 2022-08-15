@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GameView: View {
     
+    @State var secondsLeft = 10
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
@@ -16,6 +17,8 @@ struct GameView: View {
     @StateObject var block2 = Block(shape: [[1, 0, 0], [1, 0, 0], [1, 0, 0]], image: Image("block-example"))
     @StateObject var block3 = Block(shape: [[0, 0, 0], [1, 1, 1], [0, 0, 0]], image: Image("block-example"))
     
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     let gridWidth = 9
     let gridHeight = 9
     let gridSubsectionSize = 3
@@ -50,7 +53,14 @@ struct GameView: View {
     /// Draws the score view each time it needs to be updated
     @ViewBuilder func drawScoreView() -> some View {
         HStack {
-            Text("Title Goes Here")
+            Text("Time left: \(secondsLeft)")
+                .onReceive(timer) { _ in
+                    if secondsLeft > 0 {
+                        secondsLeft -= 1
+                    } else {
+                        secondsLeft = 10
+                    }
+                }
             Spacer()
             Text("Score: \(score)")
         }
