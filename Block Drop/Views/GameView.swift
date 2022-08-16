@@ -9,13 +9,16 @@ import SwiftUI
 
 struct GameView: View {
     
-    @State var secondsLeft = 15
+    @State var secondsLeft = 8
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
     @StateObject var block1 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block2 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
+    
+    // Used to go back to title screen
+    @Environment(\.dismiss) var dismiss
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -25,7 +28,7 @@ struct GameView: View {
     let maxBlocks = 3
     
     init() {
-        gridTiles = [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight + 1), count: gridWidth + 1)
+        _gridTiles = State(initialValue: [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight + 1), count: gridWidth + 1))
     }
 
     var body: some View {
@@ -59,14 +62,15 @@ struct GameView: View {
                     if secondsLeft > 0 {
                         secondsLeft -= 1
                     } else {
-                        secondsLeft = 15
+                        // Returns to title screen
+                        dismiss()
                     }
                 }
             Spacer()
             Text("Score: \(score)")
         }
         .padding(20)
-        .background(.purple)
+        .background(Color(0x393939))
     }
     
     // MARK: The Grid View
@@ -105,13 +109,13 @@ struct GameView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.blue)
+        .background(Color(0x1C1C1C))
     }
     
     func getCellImage(tileNumber: Int) -> Image {
         switch tileNumber {
         case 0:
-            return Image("redsquare")
+            return Image("graysquare")
         case 1:
             return Image("greensquare")
         case -1:
@@ -136,7 +140,7 @@ struct GameView: View {
         } else if gridTiles[row][col].tileNumber == 0 {
             // Makes the sub sections of the grid different colors
             if Int(floor(Double((row - 1) / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double((col - 1) / gridSubsectionSize))) % 2 == 0 {
-                overlayColor = .green
+                overlayColor = .black
             }
         }
         return overlayColor
@@ -167,7 +171,8 @@ struct GameView: View {
                         }
                     }
                 }
-                .frame(width: 96, height: 96, alignment: .center)
+                .padding(10)
+                .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
                 // Moves the block while it is being dragged
                 .offset(block.offset)
                 // Rotates the block when tapped
@@ -193,6 +198,7 @@ struct GameView: View {
                                 dropBlockOnGrid(block)
                                 checkIfPlayerScored()
                                 block.shape = blockShapes.randomElement()!
+                                secondsLeft = 8
                             }
                             resetGridHover()
                         }
@@ -204,7 +210,7 @@ struct GameView: View {
             }
         }
         .padding(20)
-        .background(.green)
+        .background(Color(0x393939))
     }
 
     func resetGridHover() {
@@ -369,5 +375,17 @@ struct GameView: View {
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
         GameView()
+    }
+}
+
+extension Color {
+    init(_ hex: UInt, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8) & 0xFF) / 255,
+            blue: Double(hex & 0xFF) / 255,
+            opacity: alpha
+        )
     }
 }
