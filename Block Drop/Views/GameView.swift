@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GameView: View {
     
+    @Binding var isOnTitleScreen: Bool
     @State var secondsLeft = 8
     @State var score = 0
     @State var gridTiles: [[GridTile]]
@@ -17,27 +18,24 @@ struct GameView: View {
     @StateObject var block2 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     
-    // Used to go back to title screen
-    @Environment(\.dismiss) var dismiss
-    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+    
     let gridWidth = 9
     let gridHeight = 9
     let gridSubsectionSize = 3
     let maxBlocks = 3
     
-    init() {
+    init(isOnTitleScreen: Binding<Bool>) {
+        _isOnTitleScreen = isOnTitleScreen
         _gridTiles = State(initialValue: [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight + 1), count: gridWidth + 1))
     }
-
+    
     var body: some View {
         VStack(spacing: 0) {
             drawScoreView()
             drawGrid()
             makeBlockHolding()
         }
-        .coordinateSpace(name: "gameViewCoordinateSpace")
         .onAppear {
             // Creates the 3 game blocks
             blocks = [block1, block2, block3]
@@ -51,6 +49,7 @@ struct GameView: View {
                 gridTiles[0][col].tileNumber = -1
             }
         }
+        .coordinateSpace(name: "gameViewCoordinateSpace")
     }
     
     // MARK: The Score View
@@ -63,7 +62,7 @@ struct GameView: View {
                         secondsLeft -= 1
                     } else {
                         // Returns to title screen
-                        dismiss()
+                        isOnTitleScreen = true
                     }
                 }
             Spacer()
@@ -91,7 +90,7 @@ struct GameView: View {
                                         gridTiles[row][col].tileFrame = geometry.frame(in: .named("gameViewCoordinateSpace"))
                                     }
                             }
-                        )
+                            )
                     }
                     // Adds in last column of tiles that do nothing except add more space
                     getCellImage(tileNumber: -1)
@@ -115,9 +114,17 @@ struct GameView: View {
     func getCellImage(tileNumber: Int) -> Image {
         switch tileNumber {
         case 0:
-            return Image("graysquare")
+            return Image("blockslot")
         case 1:
-            return Image("greensquare")
+            return Image("block1")
+        case 2:
+            return Image("block2")
+        case 3:
+            return Image("block3")
+        case 4:
+            return Image("block4")
+        case 5:
+            return Image("block5")
         case -1:
             // Returns an image that doesn't exist so it is blank
             return Image("nosquare")
@@ -158,12 +165,12 @@ struct GameView: View {
                         HStack(spacing: 0) {
                             ForEach(0..<block.shape[row].count, id: \.self) { col in
                                 // Draws each of the blocks from their shape
-                                if block.shape[row][col] == 1{
-                                    Image("greensquare")
+                                if block.shape[row][col] == 1 {
+                                    getBlockImage(tileNumber: block.tileType)
                                         .resizable()
                                         .scaledToFit()
                                 } else {
-                                    Image("nosquare")
+                                    getBlockImage(tileNumber: 0)
                                         .resizable()
                                         .scaledToFit()
                                 }
@@ -184,11 +191,12 @@ struct GameView: View {
                 .gesture(
                     DragGesture(minimumDistance: .zero, coordinateSpace: .named("gameViewCoordinateSpace"))
                         .onChanged { gesture in
-                            block.offset = CGSize(width: gesture.translation.width - 40, height: gesture.translation.height - 40)
-                            block.position = CGPoint(x: gesture.location.x - 120, y: gesture.location.y + 15)
+                            block.offset = CGSize(width: gesture.translation.width, height: gesture.translation.height)
+                            block.position = CGPoint(x: gesture.location.x - 40, y: gesture.location.y - 40)
                             block.isPickedUp = true
                             resetGridHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
+                            print(block.position)
                         }
                         .onEnded { _ in
                             // Do stuff for dropping the block
@@ -198,12 +206,13 @@ struct GameView: View {
                                 dropBlockOnGrid(block)
                                 checkIfPlayerScored()
                                 block.shape = blockShapes.randomElement()!
+                                block.tileType = Int.random(in: 1...5)
                                 secondsLeft = 8
                             }
                             resetGridHover()
                         }
                     
-                    )
+                )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
                     Spacer()
                 }
@@ -212,7 +221,27 @@ struct GameView: View {
         .padding(20)
         .background(Color(0x393939))
     }
-
+    
+    func getBlockImage(tileNumber: Int) -> Image {
+        switch tileNumber {
+        case 0:
+            return Image("nosquare")
+        case 1:
+            return Image("block1")
+        case 2:
+            return Image("block2")
+        case 3:
+            return Image("block3")
+        case 4:
+            return Image("block4")
+        case 5:
+            return Image("block5")
+        default:
+            // This should not be called
+            return Image("")
+        }
+    }
+    
     func resetGridHover() {
         for row in 0..<gridTiles.count {
             for col in 0..<gridTiles[row].count {
@@ -244,17 +273,15 @@ struct GameView: View {
                                 // Checks to make sure the block tile is within the grid
                                 if gridRow + blockRow < gridTiles.count && gridCol + blockCol < gridTiles[gridRow].count {
                                     // This is the grid tile it is currently checking
+                                    gridTiles[gridRow + blockRow][gridCol + blockCol].isBeingHovered = true
                                     if gridTiles[gridRow + blockRow][gridCol + blockCol].tileNumber != 0 {
                                         // Is false because something in the grid is in the way
                                         blockFitsOnGrid = false
-                                    } else {
-                                        gridTiles[gridRow + blockRow][gridCol + blockCol].isBeingHovered = true
                                     }
                                 } else {
                                     // Is false because block doesn't fit within grid
                                     blockFitsOnGrid = false
                                 }
-                                
                             }
                         }
                     }
@@ -285,7 +312,7 @@ struct GameView: View {
         for row in 0..<gridTiles.count {
             for col in 0..<gridTiles[row].count {
                 if gridTiles[row][col].isBeingHovered {
-                    gridTiles[row][col].tileNumber = 1
+                    gridTiles[row][col].tileNumber = block.tileType
                 }
             }
         }
@@ -305,15 +332,15 @@ struct GameView: View {
             // Goes through tiles of subsection to check if they are filled
         outerLoop: for row in Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + 1...Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + gridSubsectionSize {
             for col in (subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + 1...(subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + gridSubsectionSize {
-                    subsectionTiles.append((row: row, col: col))
-                    // Checks if one of the tiles in the subsection is empty
-                    if gridTiles[row][col].tileNumber == 0 {
-                        subsectionFilled = false
-                        // Stops checking if the subsection is filled because one of the tiles was empty
-                        break outerLoop
-                    }
+                subsectionTiles.append((row: row, col: col))
+                // Checks if one of the tiles in the subsection is empty
+                if gridTiles[row][col].tileNumber == 0 {
+                    subsectionFilled = false
+                    // Stops checking if the subsection is filled because one of the tiles was empty
+                    break outerLoop
                 }
             }
+        }
             // Clears the tiles and gives the user points if the subsection is full
             if subsectionFilled {
                 tilesToClear += subsectionTiles
@@ -374,7 +401,7 @@ struct GameView: View {
 
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView()
+        GameView(isOnTitleScreen: .constant(false))
     }
 }
 

@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct TitleScreenView: View {
+    
+    @Binding var isOnTitleScreen: Bool
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                NavigationLink(destination: GameView()) {
-                    Text("Play")
+        VStack {
+            Text("Play")
+                .onTapGesture {
+                    isOnTitleScreen = false
                 }
-            }
         }
-        .navigationBarTitle("")
-        .navigationBarHidden(true)
     }
 }
 
 struct TitleScreenView_Previews: PreviewProvider {
     static var previews: some View {
-        TitleScreenView()
+        TitleScreenView(isOnTitleScreen: .constant(true))
     }
 }

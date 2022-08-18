@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State var isOnTitleScreen = true
+    
     var body: some View {
-        VStack (spacing: 0) {
-            TitleScreenView()
+        if isOnTitleScreen {
+            TitleScreenView(isOnTitleScreen: $isOnTitleScreen)
+        } else {
+            GameView(isOnTitleScreen: $isOnTitleScreen)
         }
     }
 }
