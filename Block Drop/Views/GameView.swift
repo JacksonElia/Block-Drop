@@ -36,6 +36,7 @@ struct GameView: View {
             drawGrid()
             makeBlockHolding()
         }
+        .font(.custom("DINCondensed-Bold", size: 23))
         .onAppear {
             // Creates the 3 game blocks
             blocks = [block1, block2, block3]
@@ -57,6 +58,7 @@ struct GameView: View {
     @ViewBuilder func drawScoreView() -> some View {
         HStack {
             Text("Time left: \(secondsLeft)")
+                .foregroundColor(.white)
                 .onReceive(timer) { _ in
                     if secondsLeft > 0 {
                         secondsLeft -= 1
@@ -66,10 +68,31 @@ struct GameView: View {
                     }
                 }
             Spacer()
-            Text("Score: \(score)")
+            VStack(alignment: .leading) {
+                Text("Score: \(score)")
+                    .foregroundColor(.white)
+                Text("High Score: \(getHighScore())")
+                    .foregroundColor(.white)
+            }
         }
         .padding(20)
         .background(Color(0x393939))
+    }
+    
+    func getHighScore() -> Int {
+        let userDefaults = UserDefaults.standard
+        if let highScore = userDefaults.value(forKey: "highScore") { // Returns the integer value associated with the specified key.
+            if score > highScore as! Int {
+                userDefaults.set(score, forKey: "highScore")
+            }
+            
+            return highScore as! Int
+        } else {
+            // no Highscore exists
+            userDefaults.set(0, forKey: "highScore")
+        }
+        
+        return 0
     }
     
     // MARK: The Grid View
@@ -146,8 +169,8 @@ struct GameView: View {
             }
         } else if gridTiles[row][col].tileNumber == 0 {
             // Makes the sub sections of the grid different colors
-            if Int(floor(Double((row - 1) / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double((col - 1) / gridSubsectionSize))) % 2 == 0 {
-                overlayColor = .black
+            if Int(floor(Double((row - 1) / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double((col - 1) / gridSubsectionSize))) % 2 != 0 {
+                overlayColor = Color(0x393939)
             }
         }
         return overlayColor
@@ -184,7 +207,6 @@ struct GameView: View {
                 .offset(block.offset)
                 // Rotates the block when tapped
                 .onTapGesture {
-                    print("tap")
                     rotateBlock(block)
                 }
                 // Handles the logic behind block dragging and dropping
@@ -196,7 +218,6 @@ struct GameView: View {
                             block.isPickedUp = true
                             resetGridHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
-                            print(block.position)
                         }
                         .onEnded { _ in
                             // Do stuff for dropping the block
@@ -402,17 +423,5 @@ struct GameView: View {
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
         GameView(isOnTitleScreen: .constant(false))
-    }
-}
-
-extension Color {
-    init(_ hex: UInt, alpha: Double = 1) {
-        self.init(
-            .sRGB,
-            red: Double((hex >> 16) & 0xFF) / 255,
-            green: Double((hex >> 8) & 0xFF) / 255,
-            blue: Double(hex & 0xFF) / 255,
-            opacity: alpha
-        )
     }
 }

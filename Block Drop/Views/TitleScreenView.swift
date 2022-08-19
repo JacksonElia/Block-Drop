@@ -9,15 +9,37 @@ import SwiftUI
 
 struct TitleScreenView: View {
     
+    @State var helpShowing = false
+    @State var creditsShowing = false
     @Binding var isOnTitleScreen: Bool
     
     var body: some View {
-        VStack {
+        VStack(spacing: 40) {
             Text("Play")
+                .foregroundColor(.white)
                 .onTapGesture {
                     isOnTitleScreen = false
                 }
+            Text("Help")
+                .foregroundColor(.white)
+                .onTapGesture {
+                    helpShowing = true
+                }
+                .popover(isPresented: $helpShowing) {
+                    
+                }
+            Text("Credits")
+                .foregroundColor(.white).onTapGesture {
+                    creditsShowing = true
+                }
+                .popover(isPresented: $creditsShowing) {
+                    
+                }
         }
+        .font(.custom("DINCondensed-Bold", size: 60))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(20)
+        .background(Color(0x393939))
     }
 }
 
