@@ -14,12 +14,19 @@ struct TitleScreenView: View {
     @Binding var isOnTitleScreen: Bool
     
     var body: some View {
-        VStack(spacing: 40) {
+        VStack {
+            Image("block_drop_logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding([.leading, .trailing], 10)
+                .padding([.bottom], -50)
+            Spacer()
             Text("Play")
                 .foregroundColor(.white)
                 .onTapGesture {
                     isOnTitleScreen = false
                 }
+            Spacer()
             Text("Help")
                 .foregroundColor(.white)
                 .onTapGesture {
@@ -28,6 +35,7 @@ struct TitleScreenView: View {
                 .popover(isPresented: $helpShowing) {
                     
                 }
+            Spacer()
             Text("Credits")
                 .foregroundColor(.white).onTapGesture {
                     creditsShowing = true
@@ -35,6 +43,7 @@ struct TitleScreenView: View {
                 .popover(isPresented: $creditsShowing) {
                     
                 }
+            Spacer()
         }
         .font(.custom("DINCondensed-Bold", size: 60))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
