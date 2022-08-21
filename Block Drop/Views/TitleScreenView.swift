@@ -62,6 +62,10 @@ struct TitleScreenView: View {
                         VStack(alignment: .leading, spacing: 30) {
                             Text("This game is dedicated to our mother. I made it as a gift to her and so I could learn more about app development with SwiftUI.")
                             Text("Programming done by me. Check out my [website](https://traptricker.github.io/)!")
+                                .onTapGesture {
+                                    UIApplication.shared.open(URL(string: "https://traptricker.github.io/")!, options: [:])
+
+                                }
                             Text("Art done by my sibling.")
                         }
                         .font(.custom("DINCondensed-Bold", size: 30))
