@@ -25,7 +25,7 @@ class Block: ObservableObject {
     /// true if the block can be placed on the grid
     var fitsOnGrid = false
     /// A number representing the tile
-    var tileType = Int.random(in: 1...5)
+    var tileType = Int.random(in: 2...4)
     
     init(shape: [[Int]], image: Image) {
         self.shape = shape

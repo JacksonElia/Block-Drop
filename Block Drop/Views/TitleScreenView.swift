@@ -9,9 +9,11 @@ import SwiftUI
 
 struct TitleScreenView: View {
     
+    @Binding var isOnTitleScreen: Bool
+    @Binding var gamemode: Int
+    @State var gamemodesShowing = false
     @State var helpShowing = false
     @State var creditsShowing = false
-    @Binding var isOnTitleScreen: Bool
     
     var body: some View {
         VStack {
@@ -27,7 +29,46 @@ struct TitleScreenView: View {
                     .aspectRatio(contentMode: .fit)
                     .padding(10)
                     .onTapGesture {
-                        isOnTitleScreen = false
+                        gamemodesShowing = true
+                    }
+                    .popover(isPresented: $gamemodesShowing) {
+                        VStack {
+                            Text("Gamemodes")
+                            Spacer()
+                            VStack {
+                                Image("start_up_button_\(getRandomButtonImageNumber()).play")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(10)
+                                    .onTapGesture {
+                                        isOnTitleScreen = false
+                                        gamemode = 0
+                                    }
+                                Image("start_up_button_\(getRandomButtonImageNumber()).play")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(10)
+                                    .onTapGesture {
+                                        isOnTitleScreen = false
+                                        gamemode = 1
+                                    }
+                                Image("start_up_button_\(getRandomButtonImageNumber()).play")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding(10)
+                                    .onTapGesture {
+                                        isOnTitleScreen = false
+                                        gamemode = 2
+                                    }
+                            }
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(30)
+                        .background(Color(0x393939))
+                        .onTapGesture {
+                            gamemodesShowing = false
+                        }
                     }
                 Spacer()
                 Image("start_up_button_\(getRandomButtonImageNumber()).help")
@@ -106,6 +147,6 @@ struct TitleScreenView: View {
 
 struct TitleScreenView_Previews: PreviewProvider {
     static var previews: some View {
-        TitleScreenView(isOnTitleScreen: .constant(true))
+        TitleScreenView(isOnTitleScreen: .constant(true), gamemode: .constant(0))
     }
 }

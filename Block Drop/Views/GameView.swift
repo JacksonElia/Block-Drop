@@ -10,7 +10,8 @@ import SwiftUI
 struct GameView: View {
     
     @Binding var isOnTitleScreen: Bool
-    @State var secondsLeft = 8
+    @Binding var gamemode: Int
+    @State var secondsLeft = 10
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
@@ -25,8 +26,9 @@ struct GameView: View {
     let gridSubsectionSize = 3
     let maxBlocks = 3
     
-    init(isOnTitleScreen: Binding<Bool>) {
+    init(isOnTitleScreen: Binding<Bool>, gamemode: Binding<Int>) {
         _isOnTitleScreen = isOnTitleScreen
+        _gamemode = gamemode
         _gridTiles = State(initialValue: [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight + 1), count: gridWidth + 1))
     }
     
@@ -81,15 +83,39 @@ struct GameView: View {
     
     func getHighScore() -> Int {
         let userDefaults = UserDefaults.standard
-        if let highScore = userDefaults.value(forKey: "highScore") { // Returns the integer value associated with the specified key.
-            if score > highScore as! Int {
-                userDefaults.set(score, forKey: "highScore")
+        if gamemode == 0 {
+            if let highScore = userDefaults.value(forKey: "highScoreNormal") { // Returns the integer value associated with the specified key.
+                if score > highScore as! Int {
+                    userDefaults.set(score, forKey: "highScoreNormal")
+                }
+                
+                return highScore as! Int
+            } else {
+                // no Highscore exists
+                userDefaults.set(0, forKey: "highScoreNormal")
             }
-            
-            return highScore as! Int
-        } else {
-            // no Highscore exists
-            userDefaults.set(0, forKey: "highScore")
+        } else if gamemode == 1 {
+            if let highScore = userDefaults.value(forKey: "highScoreIncrement") { // Returns the integer value associated with the specified key.
+                if score > highScore as! Int {
+                    userDefaults.set(score, forKey: "highScoreIncrement")
+                }
+                
+                return highScore as! Int
+            } else {
+                // no Highscore exists
+                userDefaults.set(0, forKey: "highScoreIncrement")
+            }
+        } else if gamemode == 2 {
+            if let highScore = userDefaults.value(forKey: "highScoreMatch") { // Returns the integer value associated with the specified key.
+                if score > highScore as! Int {
+                    userDefaults.set(score, forKey: "highScoreMatch")
+                }
+                
+                return highScore as! Int
+            } else {
+                // no Highscore exists
+                userDefaults.set(0, forKey: "highScoreMatch")
+            }
         }
         
         return 0
@@ -224,15 +250,31 @@ struct GameView: View {
                             block.offset = .zero
                             block.isPickedUp = false
                             if block.fitsOnGrid {
-                                dropBlockOnGrid(block)
-                                checkIfPlayerScored()
-                                block.shape = blockShapes.randomElement()!
-                                block.tileType = Int.random(in: 1...5)
-                                secondsLeft = 8
+                                if gamemode == 0 {
+                                    // Normal Gamemode
+                                    dropBlockOnGrid(block)
+                                    checkIfPlayerScored(isMatchMode: false)
+                                    block.shape = blockShapes.randomElement()!
+                                    block.tileType = Int.random(in: 1...5)
+                                    secondsLeft = 8
+                                } else if gamemode == 1 {
+                                    // Increment
+                                    dropBlockOnGrid(block)
+                                    checkIfPlayerScored(isMatchMode: false)
+                                    block.shape = blockShapes.randomElement()!
+                                    block.tileType = Int.random(in: 1...5)
+                                    secondsLeft += 4
+                                } else if gamemode == 2 {
+                                    // Match
+                                    dropBlockOnGrid(block)
+                                    checkIfPlayerScored(isMatchMode: true)
+                                    block.shape = blockShapes.randomElement()!
+                                    block.tileType = Int.random(in: 2...4)
+                                    secondsLeft = 15
+                                }
                             }
                             resetGridHover()
                         }
-                    
                 )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
                     Spacer()
@@ -339,11 +381,13 @@ struct GameView: View {
         }
     }
     
-    func checkIfPlayerScored() {
+    func checkIfPlayerScored(isMatchMode: Bool) {
         /// The amount of points that will be added to the player's score
         var pointsScored = 0
         /// (row, col)  tuples that represent each of the grid tiles that should be cleared
         var tilesToClear = [(Int, Int)]()
+        /// The tile type used for matching
+        var tileType = -1
         
         // Checks grid subsections
         for subsection in 0..<gridWidth * gridHeight / Int(pow(Double(gridSubsectionSize), 2)) {
@@ -359,6 +403,16 @@ struct GameView: View {
                     subsectionFilled = false
                     // Stops checking if the subsection is filled because one of the tiles was empty
                     break outerLoop
+                } else if isMatchMode {
+                    if tileType != -1 {
+                        if gridTiles[row][col].tileNumber != tileType {
+                            subsectionFilled = false
+                            // Stops checking if the subsection is filled because one of the tiles didn't match
+                            break outerLoop
+                        }
+                    } else {
+                        tileType = gridTiles[row][col].tileNumber
+                    }
                 }
             }
         }
@@ -368,6 +422,8 @@ struct GameView: View {
                 pointsScored *= 2
                 pointsScored += 100
             }
+            
+            tileType = -1
         }
         
         // Checks grid rows
@@ -382,6 +438,16 @@ struct GameView: View {
                     rowFilled = false
                     // Stops checking if the row is filled because one of the tiles was empty
                     break
+                } else if isMatchMode {
+                    if tileType != -1 {
+                        if gridTiles[row][col].tileNumber != tileType {
+                            rowFilled = false
+                            // Stops checking if the row is filled because one of the tiles didn't match
+                            break
+                        }
+                    } else {
+                        tileType = gridTiles[row][col].tileNumber
+                    }
                 }
             }
             // Clears the tiles and gives the user points if the row is full
@@ -390,6 +456,8 @@ struct GameView: View {
                 pointsScored *= 2
                 pointsScored += 100
             }
+            
+            tileType = -1
         }
         
         // Checks grid columns
@@ -404,6 +472,16 @@ struct GameView: View {
                     colFilled = false
                     // Stops checking if the column is filled because one of the tiles was empty
                     break
+                } else if isMatchMode {
+                    if tileType != -1 {
+                        if gridTiles[row][col].tileNumber != tileType {
+                            colFilled = false
+                            // Stops checking if the column is filled because one of the tiles didn't match
+                            break
+                        }
+                    } else {
+                        tileType = gridTiles[row][col].tileNumber
+                    }
                 }
             }
             // Clears the tiles and gives the user points if the column is full
@@ -422,6 +500,6 @@ struct GameView: View {
 
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView(isOnTitleScreen: .constant(false))
+        GameView(isOnTitleScreen: .constant(false), gamemode: .constant(0))
     }
 }

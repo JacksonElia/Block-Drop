@@ -10,12 +10,13 @@ import SwiftUI
 struct ContentView: View {
     
     @State var isOnTitleScreen = true
+    @State var gamemode = 0
     
     var body: some View {
         if isOnTitleScreen {
-            TitleScreenView(isOnTitleScreen: $isOnTitleScreen)
+            TitleScreenView(isOnTitleScreen: $isOnTitleScreen, gamemode: $gamemode)
         } else {
-            GameView(isOnTitleScreen: $isOnTitleScreen)
+            GameView(isOnTitleScreen: $isOnTitleScreen, gamemode: $gamemode)
         }
     }
 }
