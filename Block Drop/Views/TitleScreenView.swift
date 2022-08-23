@@ -140,7 +140,7 @@ struct TitleScreenView: View {
     }
     
     func getRandomButtonImageNumber() -> Int {
-        return Int.random(in: 1...2)
+        return Int.random(in: 1...4)
     }
     
 }

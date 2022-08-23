@@ -174,6 +174,8 @@ struct GameView: View {
             return Image("block4")
         case 5:
             return Image("block5")
+        case 6:
+            return Image("block6")
         case -1:
             // Returns an image that doesn't exist so it is blank
             return Image("nosquare")
@@ -255,14 +257,14 @@ struct GameView: View {
                                     dropBlockOnGrid(block)
                                     checkIfPlayerScored(isMatchMode: false)
                                     block.shape = blockShapes.randomElement()!
-                                    block.tileType = Int.random(in: 1...5)
+                                    block.tileType = Int.random(in: 1...6)
                                     secondsLeft = 8
                                 } else if gamemode == 1 {
                                     // Increment
                                     dropBlockOnGrid(block)
                                     checkIfPlayerScored(isMatchMode: false)
                                     block.shape = blockShapes.randomElement()!
-                                    block.tileType = Int.random(in: 1...5)
+                                    block.tileType = Int.random(in: 1...6)
                                     secondsLeft += 4
                                 } else if gamemode == 2 {
                                     // Match
@@ -299,6 +301,8 @@ struct GameView: View {
             return Image("block4")
         case 5:
             return Image("block5")
+        case 6:
+            return Image("block6")
         default:
             // This should not be called
             return Image("")
