@@ -36,7 +36,7 @@ struct TitleScreenView: View {
                             Text("Gamemodes")
                             Spacer()
                             VStack {
-                                Image("start_up_button_\(getRandomButtonImageNumber()).play")
+                                Image("menu_button_1.normal")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .padding(10)
@@ -44,7 +44,7 @@ struct TitleScreenView: View {
                                         isOnTitleScreen = false
                                         gamemode = 0
                                     }
-                                Image("start_up_button_\(getRandomButtonImageNumber()).play")
+                                Image("menu_button_1.increment")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .padding(10)
@@ -52,7 +52,7 @@ struct TitleScreenView: View {
                                         isOnTitleScreen = false
                                         gamemode = 1
                                     }
-                                Image("start_up_button_\(getRandomButtonImageNumber()).play")
+                                Image("menu_button_1.match")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .padding(10)
