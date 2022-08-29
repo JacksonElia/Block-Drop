@@ -58,26 +58,34 @@ struct GameView: View {
     // MARK: The Score View
     /// Draws the score view each time it needs to be updated
     @ViewBuilder func drawScoreView() -> some View {
-        HStack {
-            Text("Time left: \(secondsLeft)")
-                .foregroundColor(.white)
-                .onReceive(timer) { _ in
-                    if secondsLeft > 0 {
-                        secondsLeft -= 1
-                    } else {
-                        // Returns to title screen
+        HStack(alignment: .center) {
+            HStack(alignment: .firstTextBaseline) {
+                Image(systemName: "arrow.left")
+                    .padding([.trailing], 15)
+                    .alignmentGuide(.firstTextBaseline) { context in
+                        context[.bottom] - 0.14 * context.height
+                    }
+                    .onTapGesture {
                         isOnTitleScreen = true
                     }
-                }
+                Text("Time left: \(secondsLeft)")
+                    .onReceive(timer) { _ in
+                        if secondsLeft > 0 {
+                            secondsLeft -= 1
+                        } else {
+                            // Returns to title screen
+                            isOnTitleScreen = true
+                        }
+                    }
+            }
             Spacer()
             VStack(alignment: .leading) {
                 Text("Score: \(score)")
-                    .foregroundColor(.white)
                 Text("High Score: \(getHighScore())")
-                    .foregroundColor(.white)
             }
         }
-        .padding(20)
+        .foregroundColor(.white)
+        .padding(23)
         .background(Color(0x393939))
     }
     
