@@ -13,7 +13,7 @@ class Block: ObservableObject {
     
     var id = UUID()
     /// 2D Array with 1 representing a block, 0 an empty tile
-    var shape: [[Int]]
+    @Published var shape: [[Int]]
     /// The transparent image (png) that adheres to the shape of the block
     @Published var image: Image
     /// The current x, y position relative to where the block starts
