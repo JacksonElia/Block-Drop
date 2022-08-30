@@ -15,6 +15,7 @@ struct GameView: View {
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
+    @State var blockPixelSize = [CGFloat(100), CGFloat(100)]
     @StateObject var block1 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block2 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
@@ -239,6 +240,13 @@ struct GameView: View {
                 }
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
+                .background(GeometryReader { geometry in
+                    Color.clear // stretches as much as it can and is invisible
+                        .onAppear {
+                            blockPixelSize[0] = geometry.size.width
+                            blockPixelSize[1] = geometry.size.height
+                        }
+                })
                 // Moves the block while it is being dragged
                 .offset(block.offset)
                 // Rotates the block when tapped
@@ -250,7 +258,7 @@ struct GameView: View {
                     DragGesture(minimumDistance: .zero, coordinateSpace: .named("gameViewCoordinateSpace"))
                         .onChanged { gesture in
                             block.offset = CGSize(width: gesture.translation.width, height: gesture.translation.height)
-                            block.position = CGPoint(x: gesture.location.x - 40, y: gesture.location.y - 40)
+                            block.position = CGPoint(x: gesture.location.x - blockPixelSize[0] / 4, y: gesture.location.y + blockPixelSize[1] / 4)
                             block.isPickedUp = true
                             resetGridHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
@@ -337,7 +345,7 @@ struct GameView: View {
         for gridRow in 0..<gridTiles.count {
             for gridCol in 0..<gridTiles[gridRow].count {
                 // Checks if the block is being dragged over the tile
-                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x + 48, y: block.position.y + 48)) {
+                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x, y: block.position.y)) {
                     let blockShape = block.shape
                     // Loops through each tile on the block
                     for blockRow in 0..<blockShape.count {
