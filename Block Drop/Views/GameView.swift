@@ -258,7 +258,7 @@ struct GameView: View {
                     DragGesture(minimumDistance: .zero, coordinateSpace: .named("gameViewCoordinateSpace"))
                         .onChanged { gesture in
                             block.offset = CGSize(width: gesture.translation.width, height: gesture.translation.height)
-                            block.position = CGPoint(x: gesture.location.x - blockPixelSize[0] / 4, y: gesture.location.y + blockPixelSize[1] / 4)
+                            block.position = CGPoint(x: gesture.location.x - blockPixelSize[0] / 4, y: gesture.location.y + blockPixelSize[1] / 5)
                             block.isPickedUp = true
                             resetGridHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
