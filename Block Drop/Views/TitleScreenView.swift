@@ -117,7 +117,11 @@ struct TitleScreenView: View {
                                         UIApplication.shared.open(URL(string: "https://traptricker.github.io/")!, options: [:])
                                         
                                     }
-                                Text("Art done by my sibling.")
+                                Text("Art done by my sibling, Your King Dwarf. Check out their [youtube channel](https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop).")
+                                    .onTapGesture {
+                                        UIApplication.shared.open(URL(string: "https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop")!, options: [:])
+                                        
+                                    }
                             }
                             .font(.custom("DINCondensed-Bold", size: 30))
                             Spacer()
