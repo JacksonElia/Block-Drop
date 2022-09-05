@@ -64,25 +64,23 @@ struct GameView: View {
     /// Draws the score view each time it needs to be updated
     @ViewBuilder func drawScoreView() -> some View {
         HStack(alignment: .center) {
-            HStack(alignment: .firstTextBaseline) {
-                Image(systemName: "arrow.left")
-                    .padding([.trailing], 15)
-                    .alignmentGuide(.firstTextBaseline) { context in
-                        context[.bottom] - 0.14 * context.height
-                    }
-                    .onTapGesture {
+            Image(systemName: "arrow.left")
+                .padding([.trailing], 15)
+                .alignmentGuide(.firstTextBaseline) { context in
+                    context[.bottom] - 0.14 * context.height
+                }
+                .onTapGesture {
+                    isOnTitleScreen = true
+                }
+            Text("Seconds\nleft: \(secondsLeft)")
+                .onReceive(timer) { _ in
+                    if secondsLeft > 0 {
+                        secondsLeft -= 1
+                    } else {
+                        // Returns to title screen
                         isOnTitleScreen = true
                     }
-                Text("Seconds\nleft: \(secondsLeft)")
-                    .onReceive(timer) { _ in
-                        if secondsLeft > 0 {
-                            secondsLeft -= 1
-                        } else {
-                            // Returns to title screen
-                            isOnTitleScreen = true
-                        }
-                    }
-            }
+                }
             Spacer()
             Image("block_drop_icon_transparent")
                 .resizable()
@@ -99,7 +97,7 @@ struct GameView: View {
         .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
         .background(Color(0x393939))
     }
-        
+    
     func getHighScore() -> Int {
         let userDefaults = UserDefaults.standard
         if gamemode == 0 {
