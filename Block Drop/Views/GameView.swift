@@ -43,7 +43,7 @@ struct GameView: View {
             // Block images are on a different z index as to not affect the layout of the app
             makeBlockDragImages()
         }
-        .font(.custom("DINCondensed-Bold", size: 23))
+        .font(.custom("DINCondensed-Bold", size: 22))
         .onAppear {
             // Creates the 3 game blocks
             blocks = [block1, block2, block3]
@@ -73,7 +73,7 @@ struct GameView: View {
                     .onTapGesture {
                         isOnTitleScreen = true
                     }
-                Text("Time left: \(secondsLeft)")
+                Text("Seconds\nleft: \(secondsLeft)")
                     .onReceive(timer) { _ in
                         if secondsLeft > 0 {
                             secondsLeft -= 1
@@ -84,6 +84,11 @@ struct GameView: View {
                     }
             }
             Spacer()
+            Image("block_drop_icon_transparent")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .padding([.leading, .trailing], 10)
+            Spacer()
             VStack(alignment: .leading) {
                 Text("Score: \(score)")
                 Text("High Score: \(getHighScore())")
@@ -91,9 +96,10 @@ struct GameView: View {
         }
         .foregroundColor(.white)
         .padding(23)
+        .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
         .background(Color(0x393939))
     }
-    
+        
     func getHighScore() -> Int {
         let userDefaults = UserDefaults.standard
         if gamemode == 0 {
