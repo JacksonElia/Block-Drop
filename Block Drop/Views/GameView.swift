@@ -40,6 +40,7 @@ struct GameView: View {
                 drawGrid()
                 makeBlockHolding()
             }
+            // Block images are on a different z index as to not affect the layout of the app
             makeBlockDragImages()
         }
         .font(.custom("DINCondensed-Bold", size: 23))
@@ -241,7 +242,7 @@ struct GameView: View {
                         }
                     }
                 }
-                .padding(10)
+                .padding([.leading, .trailing], 5)
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
                 .background {
                     // Gets the pixel size of the block
@@ -377,7 +378,7 @@ struct GameView: View {
         for gridRow in 0..<gridTiles.count {
             for gridCol in 0..<gridTiles[gridRow].count {
                 // Checks if the block is being dragged over the tile
-                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x - blockPixelSize.width / 3.5, y: block.position.y + blockPixelSize.height / 4.5)) {
+                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x - blockPixelSize.width / 3, y: block.position.y + blockPixelSize.height / 4.5)) {
                     let blockShape = block.shape
                     // Loops through each tile on the block
                     for blockRow in 0..<blockShape.count {
