@@ -136,7 +136,7 @@ struct TitleScreenView: View {
                 Spacer()
             }
         }
-        .font(.custom("DINCondensed-Bold", size: 60))
+        .font(.custom("DINCondensed-Bold", size: 55))
         .foregroundColor(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(20)
