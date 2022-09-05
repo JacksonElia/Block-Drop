@@ -15,7 +15,7 @@ struct GameView: View {
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
-    @State var blockPixelSize = [CGFloat(100), CGFloat(100)]
+    @State var blockPixelSize = CGSize.zero
     @StateObject var block1 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block2 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
@@ -34,10 +34,13 @@ struct GameView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            drawScoreView()
-            drawGrid()
-            makeBlockHolding()
+        ZStack {
+            VStack(spacing: 0) {
+                drawScoreView()
+                drawGrid()
+                makeBlockHolding()
+            }
+            makeBlockDragImages()
         }
         .font(.custom("DINCondensed-Bold", size: 23))
         .onAppear {
@@ -240,15 +243,17 @@ struct GameView: View {
                 }
                 .padding(10)
                 .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
-                .background(GeometryReader { geometry in
-                    Color.clear // stretches as much as it can and is invisible
-                        .onAppear {
-                            blockPixelSize[0] = geometry.size.width
-                            blockPixelSize[1] = geometry.size.height
-                        }
-                })
-                // Moves the block while it is being dragged
-                .offset(block.offset)
+                .background {
+                    // Gets the pixel size of the block
+                    GeometryReader { geometry in
+                        Color.clear
+                            .onAppear {
+                                print(geometry.size)
+                                blockPixelSize = geometry.size
+                            }
+                    }
+                }
+                .opacity(block.isPickedUp ? 0 : 1)
                 // Rotates the block when tapped
                 .onTapGesture {
                     rotateBlock(block)
@@ -257,15 +262,13 @@ struct GameView: View {
                 .gesture(
                     DragGesture(minimumDistance: .zero, coordinateSpace: .named("gameViewCoordinateSpace"))
                         .onChanged { gesture in
-                            block.offset = CGSize(width: gesture.translation.width, height: gesture.translation.height)
-                            block.position = CGPoint(x: gesture.location.x - blockPixelSize[0] / 4, y: gesture.location.y + blockPixelSize[1] / 3)
+                            block.position = CGPoint(x: gesture.location.x + blockPixelSize.width / 2, y: gesture.location.y - blockPixelSize.height / 2)
                             block.isPickedUp = true
                             resetGridHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
                         }
                         .onEnded { _ in
                             // Do stuff for dropping the block
-                            block.offset = .zero
                             block.isPickedUp = false
                             if block.fitsOnGrid {
                                 if gamemode == 0 {
@@ -302,6 +305,35 @@ struct GameView: View {
         .padding(20)
         .background(Color(0x393939))
     }
+    
+    @ViewBuilder func makeBlockDragImages() -> some View {
+        ForEach(0..<blocks.count, id: \.self) { i in
+            let block = blocks[i]
+            VStack(spacing: 0) {
+                ForEach(0..<block.shape.count, id: \.self) { row in
+                    HStack(spacing: 0) {
+                        ForEach(0..<block.shape[row].count, id: \.self) { col in
+                            // Draws each of the blocks from their shape
+                            if block.shape[row][col] == 1 {
+                                getBlockImage(tileNumber: block.tileType)
+                                    .resizable()
+                                    .scaledToFit()
+                            } else {
+                                getBlockImage(tileNumber: 0)
+                                    .resizable()
+                                    .scaledToFit()
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(10)
+            .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.size.height / 7, alignment: .center)
+            .position(block.position)
+            .opacity(block.isPickedUp ? 1 : 0)
+        }
+    }
+    
     
     func getBlockImage(tileNumber: Int) -> Image {
         switch tileNumber {
@@ -345,7 +377,7 @@ struct GameView: View {
         for gridRow in 0..<gridTiles.count {
             for gridCol in 0..<gridTiles[gridRow].count {
                 // Checks if the block is being dragged over the tile
-                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x, y: block.position.y)) {
+                if gridTiles[gridRow][gridCol].tileFrame.contains(CGPoint(x: block.position.x - blockPixelSize.width / 3.5, y: block.position.y + blockPixelSize.height / 4.5)) {
                     let blockShape = block.shape
                     // Loops through each tile on the block
                     for blockRow in 0..<blockShape.count {
