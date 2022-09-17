@@ -20,6 +20,8 @@ struct GameView: View {
     @StateObject var block2 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     
+    @Environment(\.sizeCategory) var sizeCategory
+
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     let gridWidth = 9
@@ -72,24 +74,45 @@ struct GameView: View {
                 .onTapGesture {
                     isOnTitleScreen = true
                 }
-            Text("Seconds\nleft: \(secondsLeft)")
-                .onReceive(timer) { _ in
-                    if secondsLeft > 0 {
-                        secondsLeft -= 1
-                    } else {
-                        // Returns to title screen
-                        isOnTitleScreen = true
+            if sizeCategory > ContentSizeCategory.large {
+                Text("\(secondsLeft)")
+                    .onReceive(timer) { _ in
+                        if secondsLeft > 0 {
+                            secondsLeft -= 1
+                        } else {
+                            // Returns to title screen
+                            isOnTitleScreen = true
+                        }
                     }
+                Spacer()
+                Image("block_drop_icon_transparent")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                Spacer()
+                VStack(alignment: .leading) {
+                    Text("S: \(score)")
+                    Text("HS: \(getHighScore())")
                 }
-            Spacer()
-            Image("block_drop_icon_transparent")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding([.leading, .trailing], 10)
-            Spacer()
-            VStack(alignment: .leading) {
-                Text("Score: \(score)")
-                Text("High Score: \(getHighScore())")
+            } else {
+                Text("Seconds\nleft: \(secondsLeft)")
+                    .onReceive(timer) { _ in
+                        if secondsLeft > 0 {
+                            secondsLeft -= 1
+                        } else {
+                            // Returns to title screen
+                            isOnTitleScreen = true
+                        }
+                    }
+                Spacer()
+                Image("block_drop_icon_transparent")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding([.leading, .trailing], 10)
+                Spacer()
+                VStack(alignment: .leading) {
+                    Text("Score: \(score)")
+                    Text("High Score: \(getHighScore())")
+                }
             }
         }
         .foregroundColor(.white)
