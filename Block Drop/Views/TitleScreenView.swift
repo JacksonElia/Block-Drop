@@ -112,9 +112,9 @@ struct TitleScreenView: View {
                             Spacer()
                             VStack(alignment: .leading, spacing: 30) {
                                 Text("This game is dedicated to our mother. I made it as a gift to her and so I could learn more about app development with SwiftUI.")
-                                Text("Programming done by me. Check out my [website](https://traptricker.github.io/)!")
+                                Text("Programming done by me. Check out my [website](https://jacksonelia.github.io/)!")
                                     .onTapGesture {
-                                        UIApplication.shared.open(URL(string: "https://traptricker.github.io/")!, options: [:])
+                                        UIApplication.shared.open(URL(string: "https://jacksonelia.github.io/")!, options: [:])
                                         
                                     }
                                 Text("Art done by my sibling, Your King Dwarf. Check out their [youtube channel](https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop).")
