@@ -2,7 +2,7 @@
 <hr>
 
 # Privacy Policy
-**This app neither uses nor collects user data, has no paid content, and has no advertisements.
+**This app neither uses nor collects user data, has no paid content, and has no advertisements.**
 
 This is a game I made for my mother. I did all of the programming and my sibling did all of the art.
 
