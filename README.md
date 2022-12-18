@@ -1,6 +1,9 @@
 <img alt="block_drop_logo" src="https://user-images.githubusercontent.com/85963782/188524649-8c1467cc-b2f3-49d5-99f3-0b54bd7ca2aa.png" width="350"> <img alt="block_drop_logo" src="https://user-images.githubusercontent.com/85963782/188524427-32ec97b7-7d12-4b43-a3ef-e832bfe5867b.png" width="350">
 <hr>
 
+# Privacy Policy
+**This app neither uses nor collects user data, has no paid content, and has no advertisements.
+
 This is a game I made for my mother. I did all of the programming and my sibling did all of the art.
 
 # How to get it
