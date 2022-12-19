@@ -7,7 +7,7 @@
 This is a game I made for my mother. I did all of the programming and my sibling did all of the art.
 
 # How to get it
-**Once I turn 18, I will post this on the app store. Until then, my hands are tied.**
+Go to the app store and lookup "Block-Drop". If you see the same logo as shown above, you got the right app.
 
 # The Game
 It's a simple, block-placing game with a timer.
