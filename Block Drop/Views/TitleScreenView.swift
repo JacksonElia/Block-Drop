@@ -15,6 +15,8 @@ struct TitleScreenView: View {
     @State var helpShowing = false
     @State var creditsShowing = false
     
+    @Environment(\.sizeCategory) var sizeCategory
+
     var body: some View {
         VStack {
             Image("block_drop_logo")
@@ -79,17 +81,20 @@ struct TitleScreenView: View {
                         helpShowing = true
                     }
                     .popover(isPresented: $helpShowing) {
-                        VStack {
-                            Text("Help")
-                            Spacer()
-                            VStack(alignment: .leading, spacing: 30) {
-                                Text("The goal of this game is to keep playing for as long as you can and to get as many points as possible.")
-                                Text("1. Place a block by dragging and dropping it onto the board.")
-                                Text("2. Keep an eye on the timer in the top left corner. If it hits 0, you lose. You can extend the time by placing a block.")
-                                Text("3. You get points and clear space when you fill a row, column, or subsection of the board up with blocks.")
+                        ScrollView {
+                            VStack(spacing: 30) {
+                                Text("Help")
+                                VStack(alignment: .leading, spacing: 30) {
+                                    Text("The goal of this game is to keep playing for as long as you can and to get as many points as possible.")
+                                    Text("1. Tap on a block to rotate it, place it by dragging and dropping it onto the board.")
+                                    Text("2. Keep an eye on the timer in the top left corner. If it hits 0, you lose. You can extend the time by placing a block.")
+                                    Text("3. You get points and clear space when you fill a row, column, or subsection of the board up with blocks.")
+                                    Text("In Normal, the time gets reset to 8 seconds after every move. In Increment, 3 seconds are added after every move. In Match, you can only score points with the same blocks.")
+                                }
+                                .font((sizeCategory == .extraExtraExtraLarge || sizeCategory == .extraExtraLarge) ?
+                                    .custom("DINCondensed-Bold", fixedSize: 30) :
+                                        .custom("DINCondensed-Bold", size: 20))
                             }
-                            .font(.custom("DINCondensed-Bold", size: 30))
-                            Spacer()
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(30)
@@ -107,24 +112,28 @@ struct TitleScreenView: View {
                         creditsShowing = true
                     }
                     .popover(isPresented: $creditsShowing) {
-                        VStack {
-                            Text("Credits")
-                            Spacer()
-                            VStack(alignment: .leading, spacing: 30) {
-                                Text("This game is dedicated to our mother. I made it as a gift to her and so I could learn more about app development with SwiftUI.")
-                                Text("Programming done by me. Check out my [website](https://jacksonelia.github.io/)!")
-                                    .onTapGesture {
-                                        UIApplication.shared.open(URL(string: "https://jacksonelia.github.io/")!, options: [:])
-                                        
-                                    }
-                                Text("Art done by my sibling, Your King Dwarf. Check out their [youtube channel](https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop).")
-                                    .onTapGesture {
-                                        UIApplication.shared.open(URL(string: "https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop")!, options: [:])
-                                        
-                                    }
+                        ScrollView {
+                            VStack(spacing: 30) {
+                                Text("Credits")
+                                Spacer()
+                                VStack(alignment: .leading, spacing: 30) {
+                                    Text("This game is dedicated to our mother. I made it as a gift to her and so I could learn more about app development with SwiftUI.")
+                                    Text("Programming done by me. Check out my [website](https://jacksonelia.github.io/)!")
+                                        .onTapGesture {
+                                            UIApplication.shared.open(URL(string: "https://jacksonelia.github.io/")!, options: [:])
+                                            
+                                        }
+                                    Text("Art done by my sibling, Your King Dwarf. Check out their [youtube channel](https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop).")
+                                        .onTapGesture {
+                                            UIApplication.shared.open(URL(string: "https://www.youtube.com/channel/UCh6k8iSG3vE6-dHiNFj8_3Q?app=desktop")!, options: [:])
+                                            
+                                        }
+                                }
+                                .font((sizeCategory == .extraExtraExtraLarge || sizeCategory == .extraExtraLarge) ?
+                                    .custom("DINCondensed-Bold", fixedSize: 40) :
+                                        .custom("DINCondensed-Bold", size: 20))
+                                Spacer()
                             }
-                            .font(.custom("DINCondensed-Bold", size: 30))
-                            Spacer()
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(30)
@@ -136,7 +145,7 @@ struct TitleScreenView: View {
                 Spacer()
             }
         }
-        .font(.custom("DINCondensed-Bold", size: 50))
+        .font(.custom("DINCondensed-Bold", fixedSize: 75))
         .foregroundColor(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(20)

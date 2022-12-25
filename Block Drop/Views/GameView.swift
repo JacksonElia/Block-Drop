@@ -12,6 +12,7 @@ struct GameView: View {
     @Binding var isOnTitleScreen: Bool
     @Binding var gamemode: Int
     @State var secondsLeft = 10
+    @State var isDead = false
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
@@ -60,6 +61,36 @@ struct GameView: View {
             }
         }
         .coordinateSpace(name: "gameViewCoordinateSpace")
+        .popover(isPresented: $isDead) {
+            VStack {
+                VStack(alignment: .center, spacing: 30) {
+                    Spacer()
+                    Text("Game Over").font(.custom("DINCondensed-Bold", fixedSize: 80))
+                    Spacer()
+                    Text("Score: \(score)")
+                    Text("Try Again")
+                        .onTapGesture {
+                            secondsLeft = 10
+                            score = 0
+                            isDead = false
+                            resetWholeGrid()
+                        }
+                    Text("Quit")
+                        .onTapGesture {
+                            isDead = false
+                            // Kicks user back to title screen
+                            isOnTitleScreen = true
+                        }
+                    Spacer()
+                }
+                .font(.custom("DINCondensed-Bold", fixedSize: 50))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(30)
+            .foregroundColor(.white)
+            .background(Color(0x393939))
+            .interactiveDismissDisabled()
+        }
     }
     
     // MARK: The Score View
@@ -80,8 +111,8 @@ struct GameView: View {
                         if secondsLeft > 0 {
                             secondsLeft -= 1
                         } else {
-                            // Returns to title screen
-                            isOnTitleScreen = true
+                            // Brings up Game Over screen
+                            isDead = true
                         }
                     }
                 Spacer()
@@ -99,8 +130,8 @@ struct GameView: View {
                         if secondsLeft > 0 {
                             secondsLeft -= 1
                         } else {
-                            // Returns to title screen
-                            isOnTitleScreen = true
+                            // Brings up Game Over screen
+                            isDead = true
                         }
                     }
                 Spacer()
@@ -389,6 +420,14 @@ struct GameView: View {
         for row in 0..<gridTiles.count {
             for col in 0..<gridTiles[row].count {
                 gridTiles[row][col].isBeingHovered = false
+            }
+        }
+    }
+    
+    func resetWholeGrid() {
+        for row in 1..<gridTiles.count {
+            for col in 1..<gridTiles[row].count {
+                gridTiles[row][col].tileNumber = 0
             }
         }
     }
