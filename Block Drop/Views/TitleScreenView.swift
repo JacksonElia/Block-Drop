@@ -18,13 +18,12 @@ struct TitleScreenView: View {
     @Environment(\.sizeCategory) var sizeCategory
 
     var body: some View {
-        VStack {
+        VStack(spacing: 30) {
             Image("block_drop_logo")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .padding([.leading, .trailing], 10)
                 .padding([.bottom], -30)
-            Spacer()
             VStack {
                 Image("start_up_button_\(getRandomButtonImageNumber()).play")
                     .resizable()
@@ -91,9 +90,9 @@ struct TitleScreenView: View {
                                     Text("3. You get points and clear space when you fill a row, column, or subsection of the board up with blocks.")
                                     Text("In Normal, the time gets reset to 8 seconds after every move. In Increment, 3 seconds are added after every move. In Match, you can only score points with the same blocks.")
                                 }
-                                .font((sizeCategory == .extraExtraExtraLarge || sizeCategory == .extraExtraLarge) ?
-                                    .custom("DINCondensed-Bold", fixedSize: 30) :
-                                        .custom("DINCondensed-Bold", size: 20))
+                                .font((sizeCategory >= .extraLarge) ?
+                                    .custom("DINCondensed-Bold", fixedSize: 45) :
+                                        .custom("DINCondensed-Bold", size: 30))
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -129,9 +128,9 @@ struct TitleScreenView: View {
                                             
                                         }
                                 }
-                                .font((sizeCategory == .extraExtraExtraLarge || sizeCategory == .extraExtraLarge) ?
-                                    .custom("DINCondensed-Bold", fixedSize: 40) :
-                                        .custom("DINCondensed-Bold", size: 20))
+                                .font((sizeCategory >= .extraLarge) ?
+                                    .custom("DINCondensed-Bold", fixedSize: 45) :
+                                        .custom("DINCondensed-Bold", size: 30))
                                 Spacer()
                             }
                         }
