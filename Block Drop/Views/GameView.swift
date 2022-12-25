@@ -13,6 +13,7 @@ struct GameView: View {
     @Binding var gamemode: Int
     @State var secondsLeft = 10
     @State var isDead = false
+    @State var isPaused = false
     @State var score = 0
     @State var gridTiles: [[GridTile]]
     @State var blocks = [Block]()
@@ -22,7 +23,7 @@ struct GameView: View {
     @StateObject var block3 = Block(shape: blockShapes.randomElement()!, image: Image("block-example"))
     
     @Environment(\.sizeCategory) var sizeCategory
-
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     let gridWidth = 9
@@ -61,30 +62,55 @@ struct GameView: View {
             }
         }
         .coordinateSpace(name: "gameViewCoordinateSpace")
-        .popover(isPresented: $isDead) {
-            VStack {
-                VStack(alignment: .center, spacing: 30) {
-                    Spacer()
-                    Text("Game Over").font(.custom("DINCondensed-Bold", fixedSize: 80))
-                    Spacer()
-                    Text("Score: \(score)")
-                    Text("Try Again")
-                        .onTapGesture {
-                            secondsLeft = 10
-                            score = 0
-                            isDead = false
-                            resetWholeGrid()
-                        }
-                    Text("Quit")
-                        .onTapGesture {
-                            isDead = false
-                            // Kicks user back to title screen
-                            isOnTitleScreen = true
-                        }
-                    Spacer()
-                }
-                .font(.custom("DINCondensed-Bold", fixedSize: 50))
+        // This is for the pause screen
+        .popover(isPresented: $isPaused) {
+            VStack(alignment: .center, spacing: 30) {
+                Spacer()
+                Text("Paused").font(.custom("DINCondensed-Bold", fixedSize: 90))
+                Text("Score: \(score)").foregroundColor(Color(UIColor.lightGray))
+                Spacer()
+                Text("Resume")
+                    .onTapGesture {
+                        isPaused = false
+                    }
+                Text("Quit")
+                    .onTapGesture {
+                        isPaused = false
+                        // Kicks user back to title screen
+                        isOnTitleScreen = true
+                    }
+                Spacer()
             }
+            .font(.custom("DINCondensed-Bold", fixedSize: 60))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(30)
+            .foregroundColor(.white)
+            .background(Color(0x393939))
+            .interactiveDismissDisabled()
+        }
+        // This is for the game over screen
+        .popover(isPresented: $isDead) {
+            VStack(alignment: .center, spacing: 30) {
+                Spacer()
+                Text("Game Over").font(.custom("DINCondensed-Bold", fixedSize: 90))
+                Text("Score: \(score)").foregroundColor(Color(UIColor.lightGray))
+                Spacer()
+                Text("Try Again")
+                    .onTapGesture {
+                        secondsLeft = 10
+                        score = 0
+                        isDead = false
+                        resetWholeGrid()
+                    }
+                Text("Quit")
+                    .onTapGesture {
+                        isDead = false
+                        // Kicks user back to title screen
+                        isOnTitleScreen = true
+                    }
+                Spacer()
+            }
+            .font(.custom("DINCondensed-Bold", fixedSize: 60))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(30)
             .foregroundColor(.white)
@@ -97,19 +123,21 @@ struct GameView: View {
     /// Draws the score view each time it needs to be updated
     @ViewBuilder func drawScoreView() -> some View {
         HStack(alignment: .center) {
-            Image(systemName: "arrow.left")
+            Image(systemName: "pause")
                 .padding([.trailing], 15)
                 .alignmentGuide(.firstTextBaseline) { context in
                     context[.bottom] - 0.14 * context.height
                 }
                 .onTapGesture {
-                    isOnTitleScreen = true
+                    isPaused = true
                 }
             if sizeCategory > ContentSizeCategory.large {
                 Text("\(secondsLeft)")
                     .onReceive(timer) { _ in
                         if secondsLeft > 0 {
-                            secondsLeft -= 1
+                            if !isPaused {
+                                secondsLeft -= 1
+                            }
                         } else {
                             // Brings up Game Over screen
                             isDead = true
@@ -128,7 +156,9 @@ struct GameView: View {
                 Text("Seconds\nleft: \(secondsLeft)")
                     .onReceive(timer) { _ in
                         if secondsLeft > 0 {
-                            secondsLeft -= 1
+                            if !isPaused {
+                                secondsLeft -= 1
+                            }
                         } else {
                             // Brings up Game Over screen
                             isDead = true
