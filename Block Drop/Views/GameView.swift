@@ -206,7 +206,7 @@ struct GameView: View {
                 // no Highscore exists
                 userDefaults.set(0, forKey: "highScoreIncrement")
             }
-        } else if gamemode == .normal {
+        } else if gamemode == .match {
             if let highScore = userDefaults.value(forKey: "highScoreMatch") { // Returns the integer value associated with the specified key.
                 if score > highScore as! Int {
                     userDefaults.set(score, forKey: "highScoreMatch")
@@ -337,7 +337,6 @@ struct GameView: View {
                     GeometryReader { geometry in
                         Color.clear
                             .onAppear {
-                                print(geometry.size)
                                 blockPixelSize = geometry.size
                             }
                     }
