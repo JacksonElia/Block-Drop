@@ -10,7 +10,7 @@ import SwiftUI
 struct TitleScreenView: View {
     
     @Binding var isOnTitleScreen: Bool
-    @Binding var gamemode: Int
+    @Binding var gamemode: Gamemode
     @State var gamemodesShowing = false
     @State var helpShowing = false
     @State var creditsShowing = false
@@ -43,7 +43,7 @@ struct TitleScreenView: View {
                                     .padding(10)
                                     .onTapGesture {
                                         isOnTitleScreen = false
-                                        gamemode = 0
+                                        gamemode = .normal
                                     }
                                 Image("menu_button_1.increment")
                                     .resizable()
@@ -51,7 +51,7 @@ struct TitleScreenView: View {
                                     .padding(10)
                                     .onTapGesture {
                                         isOnTitleScreen = false
-                                        gamemode = 1
+                                        gamemode = .increment
                                     }
                                 Image("menu_button_1.match")
                                     .resizable()
@@ -59,7 +59,7 @@ struct TitleScreenView: View {
                                     .padding(10)
                                     .onTapGesture {
                                         isOnTitleScreen = false
-                                        gamemode = 2
+                                        gamemode = .match
                                     }
                             }
                             Spacer()
@@ -159,6 +159,6 @@ struct TitleScreenView: View {
 
 struct TitleScreenView_Previews: PreviewProvider {
     static var previews: some View {
-        TitleScreenView(isOnTitleScreen: .constant(true), gamemode: .constant(0))
+        TitleScreenView(isOnTitleScreen: .constant(true), gamemode: .constant(.normal))
     }
 }

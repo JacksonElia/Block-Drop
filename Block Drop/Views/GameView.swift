@@ -10,7 +10,7 @@ import SwiftUI
 struct GameView: View {
     
     @Binding var isOnTitleScreen: Bool
-    @Binding var gamemode: Int
+    @Binding var gamemode: Gamemode
     @State var secondsLeft = 10
     @State var isDead = false
     @State var isPaused = false
@@ -31,7 +31,7 @@ struct GameView: View {
     let gridSubsectionSize = 3
     let maxBlocks = 3
     
-    init(isOnTitleScreen: Binding<Bool>, gamemode: Binding<Int>) {
+    init(isOnTitleScreen: Binding<Bool>, gamemode: Binding<Gamemode>) {
         _isOnTitleScreen = isOnTitleScreen
         _gamemode = gamemode
         _gridTiles = State(initialValue: [[GridTile]](repeating: [GridTile](repeating: GridTile(tileNumber: 0, tileFrame: .zero), count: gridHeight + 1), count: gridWidth + 1))
@@ -184,7 +184,7 @@ struct GameView: View {
     
     func getHighScore() -> Int {
         let userDefaults = UserDefaults.standard
-        if gamemode == 0 {
+        if gamemode == .normal {
             if let highScore = userDefaults.value(forKey: "highScoreNormal") { // Returns the integer value associated with the specified key.
                 if score > highScore as! Int {
                     userDefaults.set(score, forKey: "highScoreNormal")
@@ -195,7 +195,7 @@ struct GameView: View {
                 // no Highscore exists
                 userDefaults.set(0, forKey: "highScoreNormal")
             }
-        } else if gamemode == 1 {
+        } else if gamemode == .increment {
             if let highScore = userDefaults.value(forKey: "highScoreIncrement") { // Returns the integer value associated with the specified key.
                 if score > highScore as! Int {
                     userDefaults.set(score, forKey: "highScoreIncrement")
@@ -206,7 +206,7 @@ struct GameView: View {
                 // no Highscore exists
                 userDefaults.set(0, forKey: "highScoreIncrement")
             }
-        } else if gamemode == 2 {
+        } else if gamemode == .normal {
             if let highScore = userDefaults.value(forKey: "highScoreMatch") { // Returns the integer value associated with the specified key.
                 if score > highScore as! Int {
                     userDefaults.set(score, forKey: "highScoreMatch")
@@ -360,22 +360,19 @@ struct GameView: View {
                             // Do stuff for dropping the block
                             block.isPickedUp = false
                             if block.fitsOnGrid {
-                                if gamemode == 0 {
-                                    // Normal Gamemode
+                                if gamemode == .normal {
                                     dropBlockOnGrid(block)
                                     checkIfPlayerScored(isMatchMode: false)
                                     block.shape = blockShapes.randomElement()!
                                     block.tileType = Int.random(in: 1...6)
                                     secondsLeft = 8
-                                } else if gamemode == 1 {
-                                    // Increment
+                                } else if gamemode == .increment {
                                     dropBlockOnGrid(block)
                                     checkIfPlayerScored(isMatchMode: false)
                                     block.shape = blockShapes.randomElement()!
                                     block.tileType = Int.random(in: 1...6)
                                     secondsLeft += 4
-                                } else if gamemode == 2 {
-                                    // Match
+                                } else if gamemode == .match {
                                     dropBlockOnGrid(block)
                                     checkIfPlayerScored(isMatchMode: true)
                                     block.shape = blockShapes.randomElement()!
@@ -649,6 +646,6 @@ struct GameView: View {
 
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
-        GameView(isOnTitleScreen: .constant(false), gamemode: .constant(0))
+        GameView(isOnTitleScreen: .constant(false), gamemode: .constant(.normal))
     }
 }

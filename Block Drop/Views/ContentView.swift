@@ -10,8 +10,8 @@ import SwiftUI
 struct ContentView: View {
     
     @State var isOnTitleScreen = true
-    @State var gamemode = 0
-    
+    @State var gamemode: Gamemode = .normal
+
     var body: some View {
         if isOnTitleScreen {
             TitleScreenView(isOnTitleScreen: $isOnTitleScreen, gamemode: $gamemode)
@@ -37,4 +37,10 @@ extension Color {
             opacity: alpha
         )
     }
+}
+
+enum Gamemode {
+    case normal
+    case increment
+    case match
 }
