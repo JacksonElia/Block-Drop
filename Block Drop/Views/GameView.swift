@@ -106,6 +106,8 @@ struct GameView: View {
                 Text("Quit")
                     .onTapGesture {
                         isPaused = false
+                        resetGame()
+                        saveGame()
                         // Kicks user back to title screen
                         isOnTitleScreen = true
                     }
