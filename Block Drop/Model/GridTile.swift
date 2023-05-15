@@ -13,5 +13,6 @@ struct GridTile: Codable {
     var tileNumber: Int
     var tileFrame: CGRect
     var isBeingHovered = false
+    var isExtraPoints = false
     
 }

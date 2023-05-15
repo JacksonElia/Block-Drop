@@ -364,6 +364,8 @@ struct GameView: View {
                     overlayColor = .red
                 }
             }
+        } else if gridTiles[row][col].isExtraPoints {
+            overlayColor = .cyan
         } else if gridTiles[row][col].tileNumber == 0 {
             // Makes the sub sections of the grid different colors
             if Int(floor(Double((row - 1) / gridSubsectionSize)) + Double(gridSubsectionSize) * floor(Double((col - 1) / gridSubsectionSize))) % 2 != 0 {
@@ -420,7 +422,7 @@ struct GameView: View {
                         .onChanged { gesture in
                             block.position = CGPoint(x: gesture.location.x + blockPixelSize.width / 2, y: gesture.location.y - blockPixelSize.height / 2)
                             block.isPickedUp = true
-                            resetGridHover()
+                            resetGridTilesHover()
                             block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
                         }
                         .onEnded { _ in
@@ -447,7 +449,7 @@ struct GameView: View {
                                     secondsLeft = 15
                                 }
                             }
-                            resetGridHover()
+                            resetGridTilesHover()
                             saveGame()
                         }
                 )
@@ -511,7 +513,7 @@ struct GameView: View {
         }
     }
     
-    func resetGridHover() {
+    func resetGridTilesHover() {
         for row in 0..<gridTiles.count {
             for col in 0..<gridTiles[row].count {
                 gridTiles[row][col].isBeingHovered = false
@@ -519,7 +521,17 @@ struct GameView: View {
         }
     }
     
+    func resetGridTilesExtraPoints() {
+        for row in 0..<gridTiles.count {
+            for col in 0..<gridTiles[row].count {
+                gridTiles[row][col].isExtraPoints = false
+            }
+        }
+    }
+    
     func resetWholeGrid() {
+        resetGridTilesHover()
+        resetGridTilesExtraPoints()
         // Creates the invisible tiles on the border of the grid
         for row in 0..<gridTiles.count {
             gridTiles[row][0].tileNumber = -1
@@ -613,15 +625,20 @@ struct GameView: View {
         /// The tile type used for matching
         var tileType = -1
         
+        var scored = false
+        
         // Checks grid subsections
         for subsection in 0..<gridWidth * gridHeight / Int(pow(Double(gridSubsectionSize), 2)) {
             var subsectionTiles = [(Int, Int)]()
-            // Starts assuming that the subsection is completely filled
+            var hasExtraPointsTile = false
             var subsectionFilled = true
             // Goes through tiles of subsection to check if they are filled
         outerLoop: for row in Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + 1...Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + gridSubsectionSize {
             for col in (subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + 1...(subsection % (gridWidth / gridSubsectionSize)) * gridSubsectionSize + gridSubsectionSize {
                 subsectionTiles.append((row: row, col: col))
+                if gridTiles[row][col].isExtraPoints {
+                    hasExtraPointsTile = true
+                }
                 // Checks if one of the tiles in the subsection is empty
                 if gridTiles[row][col].tileNumber == 0 {
                     subsectionFilled = false
@@ -645,6 +662,8 @@ struct GameView: View {
                 tilesToClear += subsectionTiles
                 pointsScored *= 2
                 pointsScored += 100
+                pointsScored *= hasExtraPointsTile ? 2 : 1
+                scored = true
             }
             
             tileType = -1
@@ -653,10 +672,13 @@ struct GameView: View {
         // Checks grid rows
         for row in 1...gridHeight {
             var rowTiles = [(Int, Int)]()
-            // Starts assuming the entire row is filled
+            var hasExtraPointsTile = false;
             var rowFilled = true
             for col in 1...gridWidth {
                 rowTiles.append((row: row, col: col))
+                if gridTiles[row][col].isExtraPoints {
+                    hasExtraPointsTile = true
+                }
                 // Checks if one of the tiles in the row is empty
                 if gridTiles[row][col].tileNumber == 0 {
                     rowFilled = false
@@ -679,6 +701,8 @@ struct GameView: View {
                 tilesToClear += rowTiles
                 pointsScored *= 2
                 pointsScored += 100
+                pointsScored *= hasExtraPointsTile ? 2 : 1
+                scored = true
             }
             
             tileType = -1
@@ -687,10 +711,13 @@ struct GameView: View {
         // Checks grid columns
         for col in 1...gridWidth {
             var colTiles = [(Int, Int)]()
-            // Starts assuming the entire column is filled
+            var hasExtraPointsTile = false
             var colFilled = true
             for row in 1...gridHeight {
                 colTiles.append((row: row, col: col))
+                if gridTiles[row][col].isExtraPoints {
+                    hasExtraPointsTile = true
+                }
                 // Checks if one of the tiles in the column is empty
                 if gridTiles[row][col].tileNumber == 0 {
                     colFilled = false
@@ -713,11 +740,22 @@ struct GameView: View {
                 tilesToClear += colTiles
                 pointsScored *= 2
                 pointsScored += 100
+                pointsScored *= hasExtraPointsTile ? 2 : 1
+                scored = true
             }
         }
         
         score += pointsScored
-        clearGridTiles(tilesToClear: tilesToClear)
+        
+        if scored {
+            clearGridTiles(tilesToClear: tilesToClear)
+            resetGridTilesExtraPoints()
+        }
+        
+        // Theres a small chance that a random tile will become worth more points
+        if Int.random(in: 1...5) == 1 {
+            gridTiles[Int.random(in: 1...gridHeight)][Int.random(in: 1...gridWidth)].isExtraPoints = true
+        }
     }
     
 }
