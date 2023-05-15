@@ -47,56 +47,56 @@ struct GameView: View {
             // Block images are on a different z index as to not affect the layout of the app
             makeBlockDragImages()
         }
-        .font(.custom("DINCondensed-Bold", size: 22))
+        .font(.custom(K.UIConstants.mainFont, size: 22))
         .onAppear {
             // Creates the 3 game blocks, it doesn't save the blocks because who would ever know
             blocks = [block1, block2, block3]
             
             let userDefaults = UserDefaults.standard
             if gamemode == .normal {
-                if let gridTilesData = userDefaults.data(forKey: "savedGridNormal") {
+                if let gridTilesData = userDefaults.data(forKey: K.UserDefaultsKeys.gridNormal) {
                     do {
                         let decoder = JSONDecoder()
                         // Loads the saved grid data, assumes that if grid was successfully decoded, other data has been saved
                         gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
-                        score = userDefaults.value(forKey: "savedScoreNormal") as! Int
-                        secondsLeft = userDefaults.value(forKey: "savedSecondsLeftNormal") as! Int
+                        score = userDefaults.value(forKey: K.UserDefaultsKeys.scoreNormal) as! Int
+                        secondsLeft = userDefaults.value(forKey: K.UserDefaultsKeys.secondsLeftNormal) as! Int
                     } catch {
                         print(error)
                     }
                 }
             } else if gamemode == .increment {
-                if let gridTilesData = userDefaults.data(forKey: "savedGridIncrement") {
+                if let gridTilesData = userDefaults.data(forKey: K.UserDefaultsKeys.gridIncrement) {
                     do {
                         let decoder = JSONDecoder()
                         // Loads the saved grid data
                         gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
-                        score = userDefaults.value(forKey: "savedScoreIncrement") as! Int
-                        secondsLeft = userDefaults.value(forKey: "savedSecondsLeftIncrement") as! Int
+                        score = userDefaults.value(forKey: K.UserDefaultsKeys.scoreIncrement) as! Int
+                        secondsLeft = userDefaults.value(forKey: K.UserDefaultsKeys.secondsLeftIncrement) as! Int
                     } catch {
                         print(error)
                     }
                 }
             } else if gamemode == .match {
-                if let gridTilesData = userDefaults.data(forKey: "savedGridMatch") {
+                if let gridTilesData = userDefaults.data(forKey: K.UserDefaultsKeys.gridMatch) {
                     do {
                         let decoder = JSONDecoder()
                         // Loads the saved grid data
                         gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
-                        score = userDefaults.value(forKey: "savedScoreMatch") as! Int
-                        secondsLeft = userDefaults.value(forKey: "savedSecondsLeftMatch") as! Int
+                        score = userDefaults.value(forKey: K.UserDefaultsKeys.scoreMatch) as! Int
+                        secondsLeft = userDefaults.value(forKey: K.UserDefaultsKeys.secondsLeftMatch) as! Int
                     } catch {
                         print(error)
                     }
                 }
             }
         }
-        .coordinateSpace(name: "gameViewCoordinateSpace")
+        .coordinateSpace(name: K.UIConstants.gameViewCoordinateSpaceName)
         // This is for the pause screen
         .popover(isPresented: $isPaused) {
             VStack(alignment: .center, spacing: 30) {
                 Spacer()
-                Text("Paused").font(.custom("DINCondensed-Bold", fixedSize: 90))
+                Text("Paused").font(.custom(K.UIConstants.mainFont, fixedSize: 90))
                 Text("Score: \(score)").foregroundColor(Color(UIColor.lightGray))
                 Spacer()
                 Text("Resume")
@@ -111,7 +111,7 @@ struct GameView: View {
                     }
                 Spacer()
             }
-            .font(.custom("DINCondensed-Bold", fixedSize: 60))
+            .font(.custom(K.UIConstants.mainFont, fixedSize: 60))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(30)
             .foregroundColor(.white)
@@ -122,7 +122,7 @@ struct GameView: View {
         .popover(isPresented: $isDead) {
             VStack(alignment: .center, spacing: 30) {
                 Spacer()
-                Text("Game Over").font(.custom("DINCondensed-Bold", fixedSize: 90))
+                Text("Game Over").font(.custom(K.UIConstants.mainFont, fixedSize: 90))
                 Text("Score: \(score)").foregroundColor(Color(UIColor.lightGray))
                 Spacer()
                 Text("Try Again")
@@ -143,7 +143,7 @@ struct GameView: View {
                     }
                 Spacer()
             }
-            .font(.custom("DINCondensed-Bold", fixedSize: 60))
+            .font(.custom(K.UIConstants.mainFont, fixedSize: 60))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(30)
             .foregroundColor(.white)
@@ -219,37 +219,37 @@ struct GameView: View {
         // The object used for saving data locally
         let userDefaults = UserDefaults.standard
         if gamemode == .normal {
-            if let highScore = userDefaults.value(forKey: "highScoreNormal") { // Returns the integer value associated with the specified key.
+            if let highScore = userDefaults.value(forKey: K.UserDefaultsKeys.highScoreNormal) { // Returns the integer value associated with the specified key.
                 if score > highScore as! Int {
-                    userDefaults.set(score, forKey: "highScoreNormal")
+                    userDefaults.set(score, forKey: K.UserDefaultsKeys.highScoreNormal)
                 }
                 
                 return highScore as! Int
             } else {
                 // no Highscore exists
-                userDefaults.set(0, forKey: "highScoreNormal")
+                userDefaults.set(0, forKey: K.UserDefaultsKeys.highScoreNormal)
             }
         } else if gamemode == .increment {
-            if let highScore = userDefaults.value(forKey: "highScoreIncrement") {
+            if let highScore = userDefaults.value(forKey: K.UserDefaultsKeys.highScoreIncrement) {
                 if score > highScore as! Int {
-                    userDefaults.set(score, forKey: "highScoreIncrement")
+                    userDefaults.set(score, forKey: K.UserDefaultsKeys.highScoreIncrement)
                 }
                 
                 return highScore as! Int
             } else {
                 // no Highscore exists
-                userDefaults.set(0, forKey: "highScoreIncrement")
+                userDefaults.set(0, forKey: K.UserDefaultsKeys.highScoreIncrement)
             }
         } else if gamemode == .match {
-            if let highScore = userDefaults.value(forKey: "highScoreMatch") {
+            if let highScore = userDefaults.value(forKey: K.UserDefaultsKeys.highScoreMatch) {
                 if score > highScore as! Int {
-                    userDefaults.set(score, forKey: "highScoreMatch")
+                    userDefaults.set(score, forKey: K.UserDefaultsKeys.highScoreMatch)
                 }
                 
                 return highScore as! Int
             } else {
                 // no Highscore exists
-                userDefaults.set(0, forKey: "highScoreMatch")
+                userDefaults.set(0, forKey: K.UserDefaultsKeys.highScoreMatch)
             }
         }
         
@@ -265,20 +265,17 @@ struct GameView: View {
             gridTilesData = try encoder.encode(gridTiles)
             
             if gamemode == .normal {
-                userDefaults.set(score, forKey: "savedScoreNormal")
-                userDefaults.set(secondsLeft, forKey: "savedSecondsLeftNormal")
-                userDefaults.set(gridTilesData, forKey: "savedGridNormal")
-                //            userDefaults.set(blocks, forKey: "savedBlocksNormal")
+                userDefaults.set(score, forKey: K.UserDefaultsKeys.scoreNormal)
+                userDefaults.set(secondsLeft, forKey: K.UserDefaultsKeys.secondsLeftNormal)
+                userDefaults.set(gridTilesData, forKey: K.UserDefaultsKeys.gridNormal)
             } else if gamemode == .increment {
-                userDefaults.set(score, forKey: "savedScoreIncrement")
-                userDefaults.set(secondsLeft, forKey: "savedSecondsLeftIncrement")
-                userDefaults.set(gridTilesData, forKey: "savedGridIncrement")
-                //            userDefaults.set(blocks, forKey: "savedBlocksIncrement")
+                userDefaults.set(score, forKey: K.UserDefaultsKeys.scoreIncrement)
+                userDefaults.set(secondsLeft, forKey: K.UserDefaultsKeys.secondsLeftIncrement)
+                userDefaults.set(gridTilesData, forKey: K.UserDefaultsKeys.gridIncrement)
             } else if gamemode == .match {
-                userDefaults.set(score, forKey: "savedScoreMatch")
-                userDefaults.set(secondsLeft, forKey: "savedSecondsLeftMatch")
-                userDefaults.set(gridTilesData, forKey: "savedGridMatch")
-                //            userDefaults.set(blocks, forKey: "savedBlocksMatch")
+                userDefaults.set(score, forKey: K.UserDefaultsKeys.scoreMatch)
+                userDefaults.set(secondsLeft, forKey: K.UserDefaultsKeys.secondsLeftMatch)
+                userDefaults.set(gridTilesData, forKey: K.UserDefaultsKeys.gridMatch)
             }
         } catch {
             print(error)
@@ -289,10 +286,6 @@ struct GameView: View {
         secondsLeft = 10
         score = 0
         resetWholeGrid()
-//        for block in blocks {
-//            block.shape = blockShapes.randomElement()!
-//            block.tileType = Int.random(in: 1...6)
-//        }
     }
     
     // MARK: The Grid View
@@ -310,7 +303,7 @@ struct GameView: View {
                                     .opacity(0.6)
                                     .onAppear {
                                         // Sets the value of the actual cell, not the copy of it
-                                        gridTiles[row][col].tileFrame = geometry.frame(in: .named("gameViewCoordinateSpace"))
+                                        gridTiles[row][col].tileFrame = geometry.frame(in: .named(K.UIConstants.gameViewCoordinateSpaceName))
                                     }
                             }
                             )
@@ -421,7 +414,7 @@ struct GameView: View {
                 }
                 // Handles the logic behind block dragging and dropping
                 .gesture(
-                    DragGesture(minimumDistance: .zero, coordinateSpace: .named("gameViewCoordinateSpace"))
+                    DragGesture(minimumDistance: .zero, coordinateSpace: .named(K.UIConstants.gameViewCoordinateSpaceName))
                         .onChanged { gesture in
                             block.position = CGPoint(x: gesture.location.x + blockPixelSize.width / 2, y: gesture.location.y - blockPixelSize.height / 2)
                             block.isPickedUp = true

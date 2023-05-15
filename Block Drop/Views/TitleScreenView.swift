@@ -91,8 +91,8 @@ struct TitleScreenView: View {
                                     Text("In Normal, the time gets reset to 8 seconds after every move. In Increment, 3 seconds are added after every move. In Match, you can only score points with the same blocks.")
                                 }
                                 .font((sizeCategory >= .extraLarge) ?
-                                    .custom("DINCondensed-Bold", fixedSize: 45) :
-                                        .custom("DINCondensed-Bold", size: 30))
+                                    .custom(K.UIConstants.mainFont, fixedSize: 45) :
+                                        .custom(K.UIConstants.mainFont, size: 30))
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -129,8 +129,8 @@ struct TitleScreenView: View {
                                         }
                                 }
                                 .font((sizeCategory >= .extraLarge) ?
-                                    .custom("DINCondensed-Bold", fixedSize: 45) :
-                                        .custom("DINCondensed-Bold", size: 30))
+                                    .custom(K.UIConstants.mainFont, fixedSize: 45) :
+                                        .custom(K.UIConstants.mainFont, size: 30))
                                 Spacer()
                             }
                         }
@@ -144,7 +144,7 @@ struct TitleScreenView: View {
                 Spacer()
             }
         }
-        .font(.custom("DINCondensed-Bold", fixedSize: 75))
+        .font(.custom(K.UIConstants.mainFont, fixedSize: 75))
         .foregroundColor(.white)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(20)
