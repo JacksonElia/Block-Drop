@@ -49,16 +49,46 @@ struct GameView: View {
         }
         .font(.custom("DINCondensed-Bold", size: 22))
         .onAppear {
-            // Creates the 3 game blocks
+            // Creates the 3 game blocks, it doesn't save the blocks because who would ever know
             blocks = [block1, block2, block3]
             
-            // Creates the invisible tiles on the border of the grid
-            for row in 0..<gridTiles.count {
-                gridTiles[row][0].tileNumber = -1
-            }
-            
-            for col in 0..<gridTiles[0].count {
-                gridTiles[0][col].tileNumber = -1
+            let userDefaults = UserDefaults.standard
+            if gamemode == .normal {
+                if let gridTilesData = userDefaults.data(forKey: "savedGridNormal") {
+                    do {
+                        let decoder = JSONDecoder()
+                        // Loads the saved grid data, assumes that if grid was successfully decoded, other data has been saved
+                        gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
+                        score = userDefaults.value(forKey: "savedScoreNormal") as! Int
+                        secondsLeft = userDefaults.value(forKey: "savedSecondsLeftNormal") as! Int
+                    } catch {
+                        print(error)
+                    }
+                }
+            } else if gamemode == .increment {
+                if let gridTilesData = userDefaults.data(forKey: "savedGridIncrement") {
+                    do {
+                        let decoder = JSONDecoder()
+                        // Loads the saved grid data
+                        gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
+                        score = userDefaults.value(forKey: "savedScoreIncrement") as! Int
+                        secondsLeft = userDefaults.value(forKey: "savedSecondsLeftIncrement") as! Int
+                    } catch {
+                        print(error)
+                    }
+                }
+            } else if gamemode == .match {
+                if let gridTilesData = userDefaults.data(forKey: "savedGridMatch") {
+                    do {
+                        let decoder = JSONDecoder()
+                        // Loads the saved grid data
+                        gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
+                        score = userDefaults.value(forKey: "savedScoreMatch") as! Int
+                        secondsLeft = userDefaults.value(forKey: "savedSecondsLeftMatch") as! Int
+                    } catch {
+                        print(error)
+                    }
+                }
             }
         }
         .coordinateSpace(name: "gameViewCoordinateSpace")
@@ -100,11 +130,14 @@ struct GameView: View {
                         secondsLeft = 10
                         score = 0
                         isDead = false
-                        resetWholeGrid()
+                        resetGame()
+                        saveGame()
                     }
                 Text("Quit")
                     .onTapGesture {
                         isDead = false
+                        resetGame()
+                        saveGame()
                         // Kicks user back to title screen
                         isOnTitleScreen = true
                     }
@@ -183,6 +216,7 @@ struct GameView: View {
     }
     
     func getHighScore() -> Int {
+        // The object used for saving data locally
         let userDefaults = UserDefaults.standard
         if gamemode == .normal {
             if let highScore = userDefaults.value(forKey: "highScoreNormal") { // Returns the integer value associated with the specified key.
@@ -196,7 +230,7 @@ struct GameView: View {
                 userDefaults.set(0, forKey: "highScoreNormal")
             }
         } else if gamemode == .increment {
-            if let highScore = userDefaults.value(forKey: "highScoreIncrement") { // Returns the integer value associated with the specified key.
+            if let highScore = userDefaults.value(forKey: "highScoreIncrement") {
                 if score > highScore as! Int {
                     userDefaults.set(score, forKey: "highScoreIncrement")
                 }
@@ -207,7 +241,7 @@ struct GameView: View {
                 userDefaults.set(0, forKey: "highScoreIncrement")
             }
         } else if gamemode == .match {
-            if let highScore = userDefaults.value(forKey: "highScoreMatch") { // Returns the integer value associated with the specified key.
+            if let highScore = userDefaults.value(forKey: "highScoreMatch") {
                 if score > highScore as! Int {
                     userDefaults.set(score, forKey: "highScoreMatch")
                 }
@@ -220,6 +254,45 @@ struct GameView: View {
         }
         
         return 0
+    }
+    
+    func saveGame() {
+        let userDefaults = UserDefaults.standard
+        do {
+            let encoder = JSONEncoder()
+            var gridTilesData: Data
+            // Turns the custom objects into JSON
+            gridTilesData = try encoder.encode(gridTiles)
+            
+            if gamemode == .normal {
+                userDefaults.set(score, forKey: "savedScoreNormal")
+                userDefaults.set(secondsLeft, forKey: "savedSecondsLeftNormal")
+                userDefaults.set(gridTilesData, forKey: "savedGridNormal")
+                //            userDefaults.set(blocks, forKey: "savedBlocksNormal")
+            } else if gamemode == .increment {
+                userDefaults.set(score, forKey: "savedScoreIncrement")
+                userDefaults.set(secondsLeft, forKey: "savedSecondsLeftIncrement")
+                userDefaults.set(gridTilesData, forKey: "savedGridIncrement")
+                //            userDefaults.set(blocks, forKey: "savedBlocksIncrement")
+            } else if gamemode == .match {
+                userDefaults.set(score, forKey: "savedScoreMatch")
+                userDefaults.set(secondsLeft, forKey: "savedSecondsLeftMatch")
+                userDefaults.set(gridTilesData, forKey: "savedGridMatch")
+                //            userDefaults.set(blocks, forKey: "savedBlocksMatch")
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
+    func resetGame() {
+        secondsLeft = 10
+        score = 0
+        resetWholeGrid()
+//        for block in blocks {
+//            block.shape = blockShapes.randomElement()!
+//            block.tileType = Int.random(in: 1...6)
+//        }
     }
     
     // MARK: The Grid View
@@ -380,6 +453,7 @@ struct GameView: View {
                                 }
                             }
                             resetGridHover()
+                            saveGame()
                         }
                 )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
@@ -451,6 +525,16 @@ struct GameView: View {
     }
     
     func resetWholeGrid() {
+        // Creates the invisible tiles on the border of the grid
+        for row in 0..<gridTiles.count {
+            gridTiles[row][0].tileNumber = -1
+        }
+        
+        for col in 0..<gridTiles[0].count {
+            gridTiles[0][col].tileNumber = -1
+        }
+        
+        // Makes all the other tiles empty
         for row in 1..<gridTiles.count {
             for col in 1..<gridTiles[row].count {
                 gridTiles[row][col].tileNumber = 0
