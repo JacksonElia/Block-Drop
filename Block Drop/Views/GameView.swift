@@ -420,37 +420,39 @@ struct GameView: View {
                 .gesture(
                     DragGesture(minimumDistance: .zero, coordinateSpace: .named(K.UIConstants.gameViewCoordinateSpaceName))
                         .onChanged { gesture in
-                            block.position = CGPoint(x: gesture.location.x + blockPixelSize.width / 2, y: gesture.location.y - blockPixelSize.height / 2)
-                            block.isPickedUp = true
-                            resetGridTilesHover()
-                            block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
+                            if !block.isSpent {
+                                block.position = CGPoint(x: gesture.location.x + blockPixelSize.width / 2, y: gesture.location.y - blockPixelSize.height / 2)
+                                block.isPickedUp = true
+                                resetGridTilesHover()
+                                block.fitsOnGrid = checkIfBlockFitsOnGrid(block)
+                            }
                         }
                         .onEnded { _ in
-                            // Do stuff for dropping the block
-                            block.isPickedUp = false
-                            if block.fitsOnGrid {
-                                if gamemode == .normal {
+                            if !block.isSpent {
+                                // Do stuff for dropping the block
+                                block.isPickedUp = false
+                                if block.fitsOnGrid {
+                                    block.isSpent = true
                                     dropBlockOnGrid(block)
-                                    checkIfPlayerScored(isMatchMode: false)
-                                    block.shape = blockShapes.randomElement()!
-                                    block.tileType = Int.random(in: 1...6)
-                                    secondsLeft = 8
-                                } else if gamemode == .increment {
-                                    dropBlockOnGrid(block)
-                                    checkIfPlayerScored(isMatchMode: false)
-                                    block.shape = blockShapes.randomElement()!
-                                    block.tileType = Int.random(in: 1...6)
-                                    secondsLeft += 4
-                                } else if gamemode == .match {
-                                    dropBlockOnGrid(block)
-                                    checkIfPlayerScored(isMatchMode: true)
-                                    block.shape = blockShapes.randomElement()!
-                                    block.tileType = Int.random(in: 2...4)
-                                    secondsLeft = 15
+                                    block.shape = emptyBlock
+                                    if gamemode == .normal {
+                                        checkIfPlayerScored(isMatchMode: false)
+                                        block.tileType = Int.random(in: 1...6)
+                                        secondsLeft = 8
+                                    } else if gamemode == .increment {
+                                        checkIfPlayerScored(isMatchMode: false)
+                                        block.tileType = Int.random(in: 1...6)
+                                        secondsLeft += 4
+                                    } else if gamemode == .match {
+                                        checkIfPlayerScored(isMatchMode: true)
+                                        block.tileType = Int.random(in: 2...4)
+                                        secondsLeft = 15
+                                    }
                                 }
+                                resetBlocks()
+                                resetGridTilesHover()
+                                saveGame()
                             }
-                            resetGridTilesHover()
-                            saveGame()
                         }
                 )
                 if i < blocks.count - 1 { // Makes spacers after every block but the last
@@ -510,6 +512,15 @@ struct GameView: View {
         default:
             // This should not be called
             return Image("")
+        }
+    }
+    
+    func resetBlocks() {
+        if blocks[0].isSpent && blocks[1].isSpent && blocks[2].isSpent {
+            for block in blocks {
+                block.shape = blockShapes.randomElement()!
+                block.isSpent = false
+            }
         }
     }
     

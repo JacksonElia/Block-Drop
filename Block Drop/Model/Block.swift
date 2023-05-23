@@ -22,6 +22,8 @@ class Block: ObservableObject {
     @Published var position = CGPoint.zero
     /// true if the user is dragging the block
     var isPickedUp = false
+    /// true if the block should be invisible
+    var isSpent = false
     /// true if the block can be placed on the grid
     var fitsOnGrid = false
     /// A number representing the tile
@@ -100,4 +102,11 @@ let blockShapes: [[[Int]]] = [
         [0, 1, 0],
         [0, 0, 0]
     ]
+]
+
+// This is used to show that the player "spent" the block
+let emptyBlock = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
 ]
