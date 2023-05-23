@@ -436,15 +436,15 @@ struct GameView: View {
                                     dropBlockOnGrid(block)
                                     block.shape = emptyBlock
                                     if gamemode == .normal {
-                                        checkIfPlayerScored(isMatchMode: false)
+                                        checkIfPlayerScored()
                                         block.tileType = Int.random(in: 1...6)
                                         secondsLeft = 8
                                     } else if gamemode == .increment {
-                                        checkIfPlayerScored(isMatchMode: false)
+                                        checkIfPlayerScored()
                                         block.tileType = Int.random(in: 1...6)
                                         secondsLeft += 4
                                     } else if gamemode == .match {
-                                        checkIfPlayerScored(isMatchMode: true)
+                                        checkIfPlayerScored()
                                         block.tileType = Int.random(in: 2...4)
                                         secondsLeft = 15
                                     }
@@ -628,7 +628,7 @@ struct GameView: View {
         }
     }
     
-    func checkIfPlayerScored(isMatchMode: Bool) {
+    func checkIfPlayerScored() {
         /// The amount of points that will be added to the player's score
         var pointsScored = 0
         /// (row, col)  tuples that represent each of the grid tiles that should be cleared
@@ -655,7 +655,7 @@ struct GameView: View {
                     subsectionFilled = false
                     // Stops checking if the subsection is filled because one of the tiles was empty
                     break outerLoop
-                } else if isMatchMode {
+                } else if gamemode == .match {
                     if tileType != -1 {
                         if gridTiles[row][col].tileNumber != tileType {
                             subsectionFilled = false
@@ -695,7 +695,7 @@ struct GameView: View {
                     rowFilled = false
                     // Stops checking if the row is filled because one of the tiles was empty
                     break
-                } else if isMatchMode {
+                } else if gamemode == .match {
                     if tileType != -1 {
                         if gridTiles[row][col].tileNumber != tileType {
                             rowFilled = false
@@ -734,7 +734,7 @@ struct GameView: View {
                     colFilled = false
                     // Stops checking if the column is filled because one of the tiles was empty
                     break
-                } else if isMatchMode {
+                } else if gamemode == .match {
                     if tileType != -1 {
                         if gridTiles[row][col].tileNumber != tileType {
                             colFilled = false
