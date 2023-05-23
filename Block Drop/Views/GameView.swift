@@ -59,6 +59,7 @@ struct GameView: View {
                         let decoder = JSONDecoder()
                         // Loads the saved grid data, assumes that if grid was successfully decoded, other data has been saved
                         gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
+                        addInvisibleGridTiles()
                         score = userDefaults.value(forKey: K.UserDefaultsKeys.scoreNormal) as! Int
                         secondsLeft = userDefaults.value(forKey: K.UserDefaultsKeys.secondsLeftNormal) as! Int
                     } catch {
@@ -71,6 +72,7 @@ struct GameView: View {
                         let decoder = JSONDecoder()
                         // Loads the saved grid data
                         gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
+                        addInvisibleGridTiles()
                         score = userDefaults.value(forKey: K.UserDefaultsKeys.scoreIncrement) as! Int
                         secondsLeft = userDefaults.value(forKey: K.UserDefaultsKeys.secondsLeftIncrement) as! Int
                     } catch {
@@ -83,6 +85,7 @@ struct GameView: View {
                         let decoder = JSONDecoder()
                         // Loads the saved grid data
                         gridTiles = try decoder.decode([[GridTile]].self, from: gridTilesData)
+                        addInvisibleGridTiles()
                         score = userDefaults.value(forKey: K.UserDefaultsKeys.scoreMatch) as! Int
                         secondsLeft = userDefaults.value(forKey: K.UserDefaultsKeys.secondsLeftMatch) as! Int
                     } catch {
@@ -353,7 +356,7 @@ struct GameView: View {
     
     func getCellOverlayColor(_ row: Int, _ col: Int) -> Color {
         var overlayColor = Color.clear
-        if gridTiles[row][col].isBeingHovered {
+        if gridTiles[row][col].isBeingHovered && gridTiles[row][col].tileNumber != -1 {
             overlayColor = .white
             for block in blocks {
                 // Makes the hover effect red if it cannot be placed
@@ -540,14 +543,7 @@ struct GameView: View {
     func resetWholeGrid() {
         resetGridTilesHover()
         resetGridTilesExtraPoints()
-        // Creates the invisible tiles on the border of the grid
-        for row in 0..<gridTiles.count {
-            gridTiles[row][0].tileNumber = -1
-        }
-        
-        for col in 0..<gridTiles[0].count {
-            gridTiles[0][col].tileNumber = -1
-        }
+        addInvisibleGridTiles()
         
         // Makes all the other tiles empty
         for row in 1..<gridTiles.count {
@@ -560,6 +556,16 @@ struct GameView: View {
     func clearGridTiles(tilesToClear: [(row: Int, col: Int)]) {
         for tile in tilesToClear {
             gridTiles[tile.row][tile.col].tileNumber = 0
+        }
+    }
+    
+    func addInvisibleGridTiles() {
+        for row in 0..<gridTiles.count {
+            gridTiles[row][0].tileNumber = -1
+        }
+        
+        for col in 0..<gridTiles[0].count {
+            gridTiles[0][col].tileNumber = -1
         }
     }
     
@@ -752,7 +758,7 @@ struct GameView: View {
         
         if scored {
             if hasExtraPointsTile {
-                secondsLeft += 10
+                secondsLeft += 7
             } else {
                 secondsLeft += 1
             }
