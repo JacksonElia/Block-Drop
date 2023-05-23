@@ -11,7 +11,7 @@ struct GameView: View {
     
     @Binding var isOnTitleScreen: Bool
     @Binding var gamemode: Gamemode
-    @State var secondsLeft = 10
+    @State var secondsLeft = 15
     @State var isDead = false
     @State var isPaused = false
     @State var score = 0
@@ -129,15 +129,11 @@ struct GameView: View {
                 Spacer()
                 Text("Try Again")
                     .onTapGesture {
-                        secondsLeft = 10
-                        score = 0
-                        isDead = false
                         resetGame()
                         saveGame()
                     }
                 Text("Quit")
                     .onTapGesture {
-                        isDead = false
                         resetGame()
                         saveGame()
                         // Kicks user back to title screen
@@ -285,7 +281,8 @@ struct GameView: View {
     }
     
     func resetGame() {
-        secondsLeft = 10
+        isDead = false
+        secondsLeft = 15
         score = 0
         resetWholeGrid()
     }
@@ -442,7 +439,7 @@ struct GameView: View {
                                     } else if gamemode == .increment {
                                         checkIfPlayerScored()
                                         block.tileType = Int.random(in: 1...6)
-                                        secondsLeft += 4
+                                        secondsLeft += 2
                                     } else if gamemode == .match {
                                         checkIfPlayerScored()
                                         block.tileType = Int.random(in: 2...4)
@@ -637,11 +634,11 @@ struct GameView: View {
         var tileType = -1
         
         var scored = false
+        var hasExtraPointsTile = false
         
         // Checks grid subsections
         for subsection in 0..<gridWidth * gridHeight / Int(pow(Double(gridSubsectionSize), 2)) {
             var subsectionTiles = [(Int, Int)]()
-            var hasExtraPointsTile = false
             var subsectionFilled = true
             // Goes through tiles of subsection to check if they are filled
         outerLoop: for row in Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + 1...Int(floor(Double(subsection / (gridWidth / gridSubsectionSize)))) * gridSubsectionSize + gridSubsectionSize {
@@ -673,7 +670,6 @@ struct GameView: View {
                 tilesToClear += subsectionTiles
                 pointsScored *= 2
                 pointsScored += 100
-                pointsScored *= hasExtraPointsTile ? 2 : 1
                 scored = true
             }
             
@@ -683,7 +679,6 @@ struct GameView: View {
         // Checks grid rows
         for row in 1...gridHeight {
             var rowTiles = [(Int, Int)]()
-            var hasExtraPointsTile = false;
             var rowFilled = true
             for col in 1...gridWidth {
                 rowTiles.append((row: row, col: col))
@@ -712,7 +707,6 @@ struct GameView: View {
                 tilesToClear += rowTiles
                 pointsScored *= 2
                 pointsScored += 100
-                pointsScored *= hasExtraPointsTile ? 2 : 1
                 scored = true
             }
             
@@ -722,7 +716,6 @@ struct GameView: View {
         // Checks grid columns
         for col in 1...gridWidth {
             var colTiles = [(Int, Int)]()
-            var hasExtraPointsTile = false
             var colFilled = true
             for row in 1...gridHeight {
                 colTiles.append((row: row, col: col))
@@ -751,7 +744,6 @@ struct GameView: View {
                 tilesToClear += colTiles
                 pointsScored *= 2
                 pointsScored += 100
-                pointsScored *= hasExtraPointsTile ? 2 : 1
                 scored = true
             }
         }
@@ -759,6 +751,11 @@ struct GameView: View {
         score += pointsScored
         
         if scored {
+            if hasExtraPointsTile {
+                secondsLeft += 10
+            } else {
+                secondsLeft += 1
+            }
             clearGridTiles(tilesToClear: tilesToClear)
             resetGridTilesExtraPoints()
         }
