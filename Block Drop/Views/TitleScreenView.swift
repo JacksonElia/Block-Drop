@@ -88,7 +88,7 @@ struct TitleScreenView: View {
                                     Text("1. Tap on a block to rotate it, place it by dragging and dropping it onto the board.")
                                     Text("2. Keep an eye on the timer in the top left corner. If it hits 0, you lose. You can extend the time by placing a block.")
                                     Text("3. You get points and clear space when you fill a row, column, or subsection of the board up with blocks.")
-                                    Text("In Normal, the time gets reset to 8 seconds after every move. In Increment, 3 seconds are added after every move. In Match, you can only score points with the same blocks.")
+                                    Text("In Normal, the time gets reset to 8 seconds after every move. In Increment, 2 seconds are added after every move. In Match, you can only score points with the same blocks. Special blocks give more time and more points.")
                                 }
                                 .font((sizeCategory >= .extraLarge) ?
                                     .custom(K.UIConstants.mainFont, fixedSize: 45) :
